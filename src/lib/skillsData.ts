@@ -1,0 +1,121 @@
+// Skills and sub-skills data
+export const mainSkills = [
+  "Administração, Gestão e Negócios",
+  "Agropecuária e Desenvolvimento Rural",
+  "Arquitetura, Urbanismo e Design de Interiores",
+  "Ciências Fundamentais e Humanidades",
+  "Comunicação, Marketing e Publicidade",
+  "Contabilidade e Controladoria",
+  "Cultura, Artes e Entretenimento",
+  "Direito e Legislação",
+  "Educação e Pedagogia",
+  "Economia e Finanças",
+  "Engenharia e Infraestrutura",
+  "Meio Ambiente e Sustentabilidade",
+  "Políticas Públicas e Ciências Sociais",
+  "Relações Internacionais e Comércio Exterior",
+  "Saúde e Bem-Estar",
+  "Segurança Pública e Defesa",
+  "Tecnologia e Inovação",
+  "Turismo e Hospitalidade",
+  "Outro"
+];
+
+export const behavioralSkills = [
+  "Adaptabilidade",
+  "Analítico",
+  "Aprendizagem Contínua",
+  "Autonomia",
+  "Comunicação",
+  "Criatividade",
+  "Empatia",
+  "Inovação",
+  "Inteligência Emocional",
+  "Liderança",
+  "Minuciosidade",
+  "Mobilização",
+  "Negociação",
+  "Networking",
+  "Organização",
+  "Orientação para Resultados",
+  "Pensamento Crítico",
+  "Planejamento",
+  "Proatividade",
+  "Resiliência",
+  "Trabalho em Equipe"
+];
+
+export const languages = [
+  "Português", "Inglês", "Espanhol", "Francês", "Alemão", "Italiano",
+  "Holandês", "Sueco", "Norueguês", "Dinamarquês", "Polonês", "Tcheco",
+  "Eslovaco", "Russo", "Ucraniano", "Romeno", "Grego", "Turco", "Árabe",
+  "Hebraico", "Persa (Farsi)", "Hindi", "Urdu", "Japonês", "Coreano",
+  "Chinês (Mandarim)"
+];
+
+export const subSkillsMap: Record<string, string[]> = {
+  "Administração, Gestão e Negócios": [
+    "Análise de Dados e Business Intelligence",
+    "Balanced Scorecard",
+    "Business Process Management (BPM)",
+    "Compliance e Auditoria Interna",
+    "Customer Success e Gestão de Experiência do Cliente",
+    "Elaboração de Planos de Negócios",
+    "Empreendedorismo e Inovação",
+    "Finanças Corporativas",
+    "Governança Corporativa",
+    "Gestão da Inovação e Metodologias de Inovação",
+    "Gestão da Mudança",
+    "Gestão de Conflitos",
+    "Gestão de Contratos",
+    "Gestão de Fornecedores e Cadeia de Suprimentos",
+    "Gestão de Operações e Logística",
+    "Gestão de Pessoas / Recursos Humanos",
+    "Gestão de Projetos",
+    "Gestão de Relacionamento com o Cliente (CRM)",
+    "Gestão de Riscos e Crises",
+    "Gestão de Stakeholders",
+    "Gestão de Tempo e Produtividade",
+    "Gestão de TI e Sistemas Empresariais",
+    "Gestão de Vendas e Negociação",
+    "Marketing e Branding",
+    "Planejamento Estratégico",
+    "Precificação e Revenue Management",
+    "Qualidade e Processos",
+    "Sustentabilidade e Responsabilidade Social",
+    "Outro"
+  ],
+  
+  "Tecnologia e Inovação": [
+    "Análise de Dados e Business Intelligence",
+    "Arquitetura de Software",
+    "Automação Industrial e Robótica",
+    "Blockchain e Criptomoedas",
+    "Cibersegurança",
+    "Ciência de Dados e Machine Learning",
+    "Cloud Computing e Virtualização",
+    "DataOps e MLOps",
+    "Design Thinking e Metodologias de Inovação",
+    "Desenvolvimento Back-end",
+    "Desenvolvimento de Aplicativos Móveis",
+    "Desenvolvimento Front-end",
+    "Desenvolvimento Full-stack",
+    "DevOps e Integração Contínua/Entrega Contínua (CI/CD)",
+    "Edge Computing",
+    "Gestão de Produtos Digitais",
+    "Gestão de Projetos de TI",
+    "Inteligência Artificial",
+    "Internet das Coisas (IoT)",
+    "Metaverso e Realidade Virtual/Aumentada",
+    "Microservices e Arquitetura de Sistemas Distribuídos",
+    "Redes e Telecomunicações",
+    "Segurança da Informação",
+    "Testes de Software e Garantia de Qualidade (QA)",
+    "Transformação Digital e Cultura de Inovação",
+    "UX/UI Design",
+    "Web3 e Smart Contracts",
+    "Outro"
+  ]
+
+  // Add more sub-skills as needed - keeping it simple for now
+};
