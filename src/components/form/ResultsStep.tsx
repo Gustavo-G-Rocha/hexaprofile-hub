@@ -99,37 +99,61 @@ const ResultsStep = ({ data }: ResultsStepProps) => {
         </CardContent>
       </Card>
 
-      {/* Skills Summary */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Áreas de Conhecimento</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {data.skills?.map((skill) => (
-                <Badge key={skill} variant="outline">
-                  {skill}
-                </Badge>
+      {/* Skills Summary with Sub-skills */}
+      <div className="space-y-6">
+        {/* Main Skills with Sub-skills */}
+        {data.skills && data.skills.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Áreas de Conhecimento e Especialidades</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {data.skills.map((skill) => (
+                <div key={skill} className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="default" className="text-sm font-medium">
+                      {skill}
+                    </Badge>
+                  </div>
+                  
+                  {/* Show sub-skills for this area */}
+                  {data.subSkills && data.subSkills[skill] && data.subSkills[skill].length > 0 && (
+                    <div className="ml-4 space-y-2">
+                      <h4 className="text-sm font-medium text-muted-foreground">
+                        Especialidades:
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {data.subSkills[skill].map((subSkill) => (
+                          <Badge key={subSkill} variant="secondary" className="text-xs">
+                            {subSkill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Habilidades Comportamentais</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {data.behavioralSkills?.map((skill) => (
-                <Badge key={skill} variant="outline">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Behavioral Skills */}
+        {data.behavioralSkills && data.behavioralSkills.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Habilidades Comportamentais</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {data.behavioralSkills.map((skill) => (
+                  <Badge key={skill} variant="outline">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Professional Summary */}
