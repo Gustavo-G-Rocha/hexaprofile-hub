@@ -49,7 +49,128 @@ const FormWizard = () => {
     { title: "Resultados", component: ResultsStep }
   ];
 
+  const validateCurrentStep = () => {
+    switch (currentStep) {
+      case 0: // Personal Info
+        const { name, whatsapp, email, confirmEmail, state } = formData.personalInfo || {};
+        if (!name || !whatsapp || !email || !confirmEmail || !state) {
+          toast({
+            title: "Campos obrigatórios",
+            description: "Por favor, preencha todos os campos obrigatórios.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        if (email !== confirmEmail) {
+          toast({
+            title: "Emails não coincidem",
+            description: "Os emails digitados não são iguais.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        return true;
+      
+      case 1: // Skills
+        if (!formData.skills || formData.skills.length === 0) {
+          toast({
+            title: "Seleção obrigatória",
+            description: "Selecione pelo menos uma área de conhecimento.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        return true;
+      
+      case 2: // SubSkills - não obrigatório
+        return true;
+      
+      case 3: // Behavioral Skills
+        if (!formData.behavioralSkills || formData.behavioralSkills.length === 0) {
+          toast({
+            title: "Seleção obrigatória",
+            description: "Selecione pelo menos uma habilidade comportamental.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        return true;
+      
+      case 4: // HEXACO
+        const responses = formData.hexacoResponses || {};
+        if (Object.keys(responses).length < 24) {
+          toast({
+            title: "Avaliação incompleta",
+            description: "Responda todas as 24 perguntas da avaliação HEXACO.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        return true;
+      
+      case 5: // Curriculum
+        const { experiences, languages, education } = formData.curriculum || {};
+        if (!experiences || experiences.length === 0) {
+          toast({
+            title: "Experiência obrigatória",
+            description: "Adicione pelo menos uma experiência profissional.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        
+        // Validar se todas as experiências têm campos preenchidos
+        const incompleteExp = experiences.some(exp => !exp.role || !exp.company || !exp.duration);
+        if (incompleteExp) {
+          toast({
+            title: "Experiência incompleta",
+            description: "Preencha todos os campos das experiências profissionais.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        
+        if (!languages || languages.length === 0) {
+          toast({
+            title: "Idioma obrigatório",
+            description: "Selecione pelo menos um idioma que você fala fluentemente.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        
+        if (!education || education.length === 0) {
+          toast({
+            title: "Formação obrigatória",
+            description: "Adicione pelo menos uma formação acadêmica.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        
+        // Validar se todas as formações têm campos preenchidos
+        const incompleteEdu = education.some(edu => !edu.course || !edu.institution);
+        if (incompleteEdu) {
+          toast({
+            title: "Formação incompleta",
+            description: "Preencha todos os campos das formações acadêmicas.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        
+        return true;
+      
+      default:
+        return true;
+    }
+  };
+
   const handleNext = () => {
+    if (!validateCurrentStep()) {
+      return;
+    }
+    
     if (currentStep === steps.length - 2) {
       // Calculate HEXACO scores before moving to results
       const scores = calculateHexacoScores(formData.hexacoResponses || {});

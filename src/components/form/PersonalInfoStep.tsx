@@ -16,11 +16,36 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
     state: ""
   };
 
+  const formatPhoneNumber = (value: string) => {
+    // Remove todos os caracteres não numéricos
+    const numbers = value.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos
+    const limitedNumbers = numbers.slice(0, 11);
+    
+    // Aplica a máscara baseada no tamanho
+    if (limitedNumbers.length <= 2) {
+      return limitedNumbers;
+    } else if (limitedNumbers.length <= 6) {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2)}`;
+    } else if (limitedNumbers.length <= 10) {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 6)}-${limitedNumbers.slice(6)}`;
+    } else {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 7)}-${limitedNumbers.slice(7)}`;
+    }
+  };
+
   const handleChange = (field: string, value: string) => {
+    let formattedValue = value;
+    
+    if (field === 'whatsapp') {
+      formattedValue = formatPhoneNumber(value);
+    }
+    
     onUpdate({
       personalInfo: {
         ...personalInfo,
-        [field]: value
+        [field]: formattedValue
       }
     });
   };
