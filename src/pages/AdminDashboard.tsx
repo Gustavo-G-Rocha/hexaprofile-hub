@@ -3,16 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { authService, UserProfile } from "@/lib/auth";
 import { dimensionNames } from "@/lib/hexaco";
+import { subSkillsMap } from "@/lib/skillsData";
 import { useNavigate } from "react-router-dom";
-import { Search, User, MapPin, Briefcase } from "lucide-react";
+import { Search, User, MapPin, Briefcase, Shield, ShieldCheck, Crown } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProfiles, setFilteredProfiles] = useState<UserProfile[]>([]);
+  const [selectedSkill, setSelectedSkill] = useState<string>("");
+  const [selectedSubSkill, setSelectedSubSkill] = useState<string>("");
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const user = authService.getCurrentUser();
@@ -21,43 +28,101 @@ const AdminDashboard = () => {
       return;
     }
 
+    setCurrentUser(user);
     const allProfiles = authService.getUserProfiles();
     setProfiles(allProfiles);
     setFilteredProfiles(allProfiles);
   }, [navigate]);
 
   useEffect(() => {
-    if (!searchTerm) {
-      setFilteredProfiles(profiles);
-      return;
+    let filtered = profiles;
+
+    // Filter by search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(profile => {
+        const formData = profile.formData;
+        if (!formData) return false;
+
+        const personalMatch = 
+          formData.personalInfo.name.toLowerCase().includes(searchLower) ||
+          formData.personalInfo.state.toLowerCase().includes(searchLower) ||
+          formData.personalInfo.email.toLowerCase().includes(searchLower);
+
+        const skillsMatch = formData.skills.some(skill => 
+          skill.toLowerCase().includes(searchLower)
+        );
+
+        const behavioralMatch = formData.behavioralSkills.some(skill =>
+          skill.toLowerCase().includes(searchLower)
+        );
+
+        return personalMatch || skillsMatch || behavioralMatch;
+      });
     }
 
-    const filtered = profiles.filter(profile => {
-      const formData = profile.formData;
-      if (!formData) return false;
+    // Filter by primary skill
+    if (selectedSkill) {
+      filtered = filtered.filter(profile => {
+        const formData = profile.formData;
+        return formData?.skills.includes(selectedSkill);
+      });
+    }
 
-      const searchLower = searchTerm.toLowerCase();
-      
-      // Search in personal info
-      const personalMatch = 
-        formData.personalInfo.name.toLowerCase().includes(searchLower) ||
-        formData.personalInfo.state.toLowerCase().includes(searchLower);
-
-      // Search in skills
-      const skillsMatch = formData.skills.some(skill => 
-        skill.toLowerCase().includes(searchLower)
-      );
-
-      // Search in behavioral skills
-      const behavioralMatch = formData.behavioralSkills.some(skill =>
-        skill.toLowerCase().includes(searchLower)
-      );
-
-      return personalMatch || skillsMatch || behavioralMatch;
-    });
+    // Filter by sub-skill
+    if (selectedSubSkill) {
+      filtered = filtered.filter(profile => {
+        const formData = profile.formData;
+        if (!formData?.subSkills[selectedSkill]) return false;
+        return formData.subSkills[selectedSkill].includes(selectedSubSkill);
+      });
+    }
 
     setFilteredProfiles(filtered);
-  }, [searchTerm, profiles]);
+  }, [searchTerm, profiles, selectedSkill, selectedSubSkill]);
+
+  const handleSkillChange = (skill: string) => {
+    setSelectedSkill(skill);
+    setSelectedSubSkill(""); // Reset sub-skill when main skill changes
+  };
+
+  const handlePromoteToAdmin = async (userId: string, userName: string) => {
+    const success = authService.promoteToAdmin(userId);
+    if (success) {
+      toast({
+        title: "Usuário promovido",
+        description: `${userName} agora é administrador`,
+      });
+      // Refresh profiles
+      const allProfiles = authService.getUserProfiles();
+      setProfiles(allProfiles);
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível promover o usuário",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRevokeAdmin = async (userId: string, userName: string) => {
+    const success = authService.revokeAdmin(userId);
+    if (success) {
+      toast({
+        title: "Permissões removidas",
+        description: `${userName} não é mais administrador`,
+      });
+      // Refresh profiles
+      const allProfiles = authService.getUserProfiles();
+      setProfiles(allProfiles);
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover as permissões",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getHexagonColor = (dimension: string, score: number) => {
     if (score >= 75) return "bg-green-500";
@@ -66,11 +131,36 @@ const AdminDashboard = () => {
     return "bg-red-500";
   };
 
+  const getAvailableSubSkills = () => {
+    if (!selectedSkill) return [];
+    return subSkillsMap[selectedSkill] || [];
+  };
+
+  const getUserRoleIcon = (profile: UserProfile) => {
+    if (profile.isMasterAdmin) return <Crown className="h-4 w-4 text-yellow-600" />;
+    if (profile.isAdmin) return <ShieldCheck className="h-4 w-4 text-blue-600" />;
+    return <User className="h-4 w-4 text-gray-600" />;
+  };
+
+  const getUserRoleText = (profile: UserProfile) => {
+    if (profile.isMasterAdmin) return "Master Admin";
+    if (profile.isAdmin) return "Administrador";
+    return "Usuário";
+  };
+
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Painel Administrativo</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold">Painel Administrativo</h1>
+            {currentUser?.isMasterAdmin && (
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Crown className="h-3 w-3" />
+                Master Admin
+              </Badge>
+            )}
+          </div>
           <Button 
             variant="outline" 
             onClick={() => {
@@ -82,32 +172,71 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
+        {/* Search and Filters */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Search className="h-5 w-5" />
-              Buscar Perfis
+              Buscar e Filtrar Perfis
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <Input
-              placeholder="Busque por nome, cidade, área de conhecimento ou habilidade..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-md"
-            />
-            <p className="text-sm text-muted-foreground mt-2">
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-3 gap-4">
+              <Input
+                placeholder="Busque por nome, cidade, email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              
+              <Select value={selectedSkill} onValueChange={handleSkillChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Área de atuação" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Todas as áreas</SelectItem>
+                  {Object.keys(subSkillsMap).map((skill) => (
+                    <SelectItem key={skill} value={skill}>
+                      {skill}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select 
+                value={selectedSubSkill} 
+                onValueChange={setSelectedSubSkill}
+                disabled={!selectedSkill}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Especialização" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Todas as especializações</SelectItem>
+                  {getAvailableSubSkills().map((subSkill) => (
+                    <SelectItem key={subSkill} value={subSkill}>
+                      {subSkill}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <p className="text-sm text-muted-foreground">
               {filteredProfiles.length} perfis encontrados
             </p>
           </CardContent>
         </Card>
 
+        {/* Profiles Grid */}
         <div className="grid gap-6">
           {filteredProfiles.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
                 <p className="text-muted-foreground">
-                  {searchTerm ? "Nenhum perfil encontrado com os critérios de busca." : "Nenhum perfil cadastrado ainda."}
+                  {searchTerm || selectedSkill || selectedSubSkill ? 
+                    "Nenhum perfil encontrado com os critérios de busca." : 
+                    "Nenhum perfil cadastrado ainda."
+                  }
                 </p>
               </CardContent>
             </Card>
@@ -122,8 +251,11 @@ const AdminDashboard = () => {
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <CardTitle className="flex items-center gap-2">
-                          <User className="h-5 w-5" />
+                          {getUserRoleIcon(profile)}
                           {formData.personalInfo.name}
+                          <Badge variant="secondary" className="text-xs">
+                            {getUserRoleText(profile)}
+                          </Badge>
                         </CardTitle>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
@@ -136,12 +268,41 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                       </div>
-                      <Badge variant="secondary">
-                        {profile.completedAt ? 
-                          new Date(profile.completedAt).toLocaleDateString('pt-BR') : 
-                          'Em andamento'
-                        }
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        {/* Admin Controls */}
+                        {currentUser?.isMasterAdmin && !profile.isMasterAdmin && (
+                          <>
+                            {!profile.isAdmin ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handlePromoteToAdmin(profile.id, formData.personalInfo.name)}
+                                className="flex items-center gap-1"
+                              >
+                                <Shield className="h-3 w-3" />
+                                Promover a Admin
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleRevokeAdmin(profile.id, formData.personalInfo.name)}
+                                className="flex items-center gap-1"
+                              >
+                                <Shield className="h-3 w-3" />
+                                Remover Admin
+                              </Button>
+                            )}
+                          </>
+                        )}
+                        
+                        <Badge variant="secondary">
+                          {profile.completedAt ? 
+                            new Date(profile.completedAt).toLocaleDateString('pt-BR') : 
+                            'Em andamento'
+                          }
+                        </Badge>
+                      </div>
                     </div>
                   </CardHeader>
                   
@@ -162,6 +323,30 @@ const AdminDashboard = () => {
                             </Badge>
                           )}
                         </div>
+
+                        {/* Sub Skills */}
+                        {Object.keys(formData.subSkills).length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-medium">Especializações:</h4>
+                            {Object.entries(formData.subSkills).map(([area, subSkills]) => (
+                              <div key={area} className="space-y-1">
+                                <span className="text-xs font-medium text-muted-foreground">{area}:</span>
+                                <div className="flex flex-wrap gap-1">
+                                  {subSkills.slice(0, 2).map((subSkill) => (
+                                    <Badge key={subSkill} variant="outline" className="text-xs">
+                                      {subSkill}
+                                    </Badge>
+                                  ))}
+                                  {subSkills.length > 2 && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      +{subSkills.length - 2}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
                         <h3 className="font-semibold">Habilidades Comportamentais</h3>
                         <div className="flex flex-wrap gap-2">

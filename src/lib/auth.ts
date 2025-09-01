@@ -4,6 +4,8 @@ export interface User {
   email: string;
   name?: string;
   isAdmin?: boolean;
+  isMasterAdmin?: boolean;
+  role?: 'user' | 'admin' | 'master';
 }
 
 export interface FormData {
@@ -45,9 +47,31 @@ const CURRENT_USER_KEY = 'hexaco_current_user';
 export const authService = {
   login: (email: string, password: string): User | null => {
     const users = getUsers();
-    const user = users.find(u => u.email === email);
+    let user = users.find(u => u.email === email);
     
-    if (user && password === 'test123') { // Simple password for testing
+    // Master admin credentials
+    if (email === '2007.gustavo.g.r@gmail.com' && password === '12345678') {
+      if (!user) {
+        user = {
+          id: 'master-admin',
+          email: '2007.gustavo.g.r@gmail.com',
+          name: 'Admin Master',
+          isAdmin: true,
+          isMasterAdmin: true,
+          role: 'master'
+        };
+        users.push(user);
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      } else {
+        user.isMasterAdmin = true;
+        user.role = 'master';
+        user.isAdmin = true;
+      }
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+      return user;
+    }
+    
+    if (user && password === 'test123') {
       localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
       return user;
     }
@@ -59,7 +83,8 @@ export const authService = {
     const newUser: User = {
       id: Date.now().toString(),
       email,
-      isAdmin: email === 'admin@test.com'
+      isAdmin: email === 'admin@test.com',
+      role: email === 'admin@test.com' ? 'admin' : 'user'
     };
     
     users.push(newUser);
@@ -98,6 +123,62 @@ export const authService = {
 
   getUserProfiles: (): UserProfile[] => {
     return getUserProfiles();
+  },
+
+  promoteToAdmin: (userId: string): boolean => {
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser?.isMasterAdmin && !currentUser?.isAdmin) {
+      return false;
+    }
+
+    const users = getUsers();
+    const profiles = getUserProfiles();
+    
+    // Update in users list
+    const userIndex = users.findIndex(u => u.id === userId);
+    if (userIndex >= 0) {
+      users[userIndex].isAdmin = true;
+      users[userIndex].role = 'admin';
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    // Update in profiles list
+    const profileIndex = profiles.findIndex(p => p.id === userId);
+    if (profileIndex >= 0) {
+      profiles[profileIndex].isAdmin = true;
+      profiles[profileIndex].role = 'admin';
+      localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
+    }
+
+    return true;
+  },
+
+  revokeAdmin: (userId: string): boolean => {
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser?.isMasterAdmin) {
+      return false; // Only master admin can revoke admin rights
+    }
+
+    const users = getUsers();
+    const profiles = getUserProfiles();
+    
+    // Update in users list
+    const userIndex = users.findIndex(u => u.id === userId);
+    if (userIndex >= 0 && !users[userIndex].isMasterAdmin) {
+      users[userIndex].isAdmin = false;
+      users[userIndex].role = 'user';
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    // Update in profiles list
+    const profileIndex = profiles.findIndex(p => p.id === userId);
+    if (profileIndex >= 0 && !profiles[profileIndex].isMasterAdmin) {
+      profiles[profileIndex].isAdmin = false;
+      profiles[profileIndex].role = 'user';
+      localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
+    }
+
+    return true;
   }
 };
 
