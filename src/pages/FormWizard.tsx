@@ -174,12 +174,13 @@ const FormWizard = () => {
     if (currentStep === steps.length - 2) {
       // Calculate HEXACO scores before moving to results
       const scores = calculateHexacoScores(formData.hexacoResponses || {});
-      setFormData(prev => ({ ...prev, hexacoScores: scores }));
+      const updatedFormData = { ...formData, hexacoScores: scores };
+      setFormData(updatedFormData);
       
       // Save complete form data
       const user = authService.getCurrentUser();
       if (user) {
-        authService.saveUserProfile(user.id, formData as FormData);
+        authService.saveUserProfile(user.id, updatedFormData as FormData);
         toast({
           title: "Avaliação concluída!",
           description: "Seus dados foram salvos com sucesso."

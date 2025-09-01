@@ -153,7 +153,7 @@ const UserDashboard = () => {
             <CardHeader>
               <CardTitle>Áreas de Conhecimento</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 {formData.skills.map((skill) => (
                   <Badge key={skill} variant="outline">
@@ -161,6 +161,25 @@ const UserDashboard = () => {
                   </Badge>
                 ))}
               </div>
+              
+              {/* Sub Skills */}
+              {formData.subSkills && Object.keys(formData.subSkills).length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold">Especializações:</h4>
+                  {Object.entries(formData.subSkills).map(([area, subSkills]) => (
+                    <div key={area} className="space-y-2">
+                      <span className="text-xs font-medium text-muted-foreground">{area}:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {subSkills.map((subSkill) => (
+                          <Badge key={subSkill} variant="secondary" className="text-xs">
+                            {subSkill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 

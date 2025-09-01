@@ -30,6 +30,7 @@ const AdminDashboard = () => {
 
     setCurrentUser(user);
     const allProfiles = authService.getUserProfiles();
+    console.log('Loading profiles in AdminDashboard:', allProfiles);
     setProfiles(allProfiles);
     setFilteredProfiles(allProfiles);
   }, [navigate]);

@@ -104,10 +104,11 @@ export const authService = {
 
   saveUserProfile: (userId: string, formData: FormData) => {
     const profiles = getUserProfiles();
+    const currentUser = authService.getCurrentUser();
     const existingIndex = profiles.findIndex(p => p.id === userId);
     
     const profile: UserProfile = {
-      ...authService.getCurrentUser()!,
+      ...currentUser!,
       formData,
       completedAt: new Date().toISOString()
     };
@@ -119,6 +120,10 @@ export const authService = {
     }
 
     localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
+    
+    // Debug: Log para verificar salvamento
+    console.log('Profile saved:', profile);
+    console.log('All profiles:', profiles);
   },
 
   getUserProfiles: (): UserProfile[] => {
