@@ -8,7 +8,7 @@ import { authService, UserProfile } from "@/lib/auth";
 import { dimensionNames } from "@/lib/hexaco";
 import { subSkillsMap } from "@/lib/skillsData";
 import { useNavigate } from "react-router-dom";
-import { Search, User, MapPin, Briefcase, Shield, ShieldCheck, Crown } from "lucide-react";
+import { Search, User, MapPin, Briefcase, Shield, ShieldCheck, Crown, MessageCircle, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {
@@ -154,7 +154,7 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold">Painel Administrativo</h1>
+            <h1 className="text-3xl font-bold">MPHC - Painel Administrativo</h1>
             {currentUser?.isMasterAdmin && (
               <Badge variant="outline" className="flex items-center gap-1">
                 <Crown className="h-3 w-3" />
@@ -267,9 +267,45 @@ const AdminDashboard = () => {
                             <Briefcase className="h-4 w-4" />
                             {formData.personalInfo.email}
                           </div>
+                          {formData.personalInfo.whatsapp && (
+                            <div className="flex items-center gap-1">
+                              <MessageCircle className="h-4 w-4" />
+                              {formData.personalInfo.whatsapp}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        {/* Contact Buttons */}
+                        {formData.personalInfo.whatsapp && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const phoneNumber = formData.personalInfo.whatsapp.replace(/\D/g, '');
+                              window.open(`https://wa.me/55${phoneNumber}`, '_blank');
+                            }}
+                            className="flex items-center gap-1"
+                          >
+                            <MessageCircle className="h-3 w-3" />
+                            WhatsApp
+                          </Button>
+                        )}
+                        
+                        {formData.personalInfo.email && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              window.open(`mailto:${formData.personalInfo.email}`, '_blank');
+                            }}
+                            className="flex items-center gap-1"
+                          >
+                            <Mail className="h-3 w-3" />
+                            Email
+                          </Button>
+                        )}
+
                         {/* Admin Controls */}
                         {currentUser?.isMasterAdmin && !profile.isMasterAdmin && (
                           <>
