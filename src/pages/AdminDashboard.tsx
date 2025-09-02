@@ -63,7 +63,7 @@ const AdminDashboard = () => {
     }
 
     // Filter by primary skill
-    if (selectedSkill) {
+    if (selectedSkill && selectedSkill !== "__all__") {
       filtered = filtered.filter(profile => {
         const formData = profile.formData;
         return formData?.skills.includes(selectedSkill);
@@ -71,7 +71,7 @@ const AdminDashboard = () => {
     }
 
     // Filter by sub-skill
-    if (selectedSubSkill) {
+    if (selectedSubSkill && selectedSubSkill !== "__all__") {
       filtered = filtered.filter(profile => {
         const formData = profile.formData;
         if (!formData?.subSkills[selectedSkill]) return false;
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
   };
 
   const getAvailableSubSkills = () => {
-    if (!selectedSkill) return [];
+    if (!selectedSkill || selectedSkill === "__all__") return [];
     return subSkillsMap[selectedSkill] || [];
   };
 
@@ -194,7 +194,7 @@ const AdminDashboard = () => {
                   <SelectValue placeholder="Área de atuação" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as áreas</SelectItem>
+                  <SelectItem value="__all__">Todas as áreas</SelectItem>
                   {Object.keys(subSkillsMap).map((skill) => (
                     <SelectItem key={skill} value={skill}>
                       {skill}
@@ -212,7 +212,7 @@ const AdminDashboard = () => {
                   <SelectValue placeholder="Especialização" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as especializações</SelectItem>
+                  <SelectItem value="__all__">Todas as especializações</SelectItem>
                   {getAvailableSubSkills().map((subSkill) => (
                     <SelectItem key={subSkill} value={subSkill}>
                       {subSkill}
