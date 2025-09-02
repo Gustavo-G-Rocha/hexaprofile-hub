@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { authService, UserProfile } from "@/lib/auth";
 import { dimensionNames } from "@/lib/hexaco";
 import { subSkillsMap } from "@/lib/skillsData";
 import { useNavigate } from "react-router-dom";
-import { Search, User, MapPin, Briefcase, Shield, ShieldCheck, Crown, MessageCircle, Mail } from "lucide-react";
+import { Search, User, MapPin, Briefcase, Shield, ShieldCheck, Crown, MessageCircle, Mail, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {
@@ -120,6 +121,26 @@ const AdminDashboard = () => {
       toast({
         title: "Erro",
         description: "Não foi possível remover as permissões",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    const success = authService.deleteUserProfile(userId);
+    if (success) {
+      toast({
+        title: "Usuário excluído",
+        description: `${userName} foi removido do sistema`,
+      });
+      // Refresh profiles
+      const allProfiles = authService.getUserProfiles();
+      setProfiles(allProfiles);
+      setFilteredProfiles(allProfiles);
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o usuário",
         variant: "destructive",
       });
     }
@@ -304,6 +325,40 @@ const AdminDashboard = () => {
                             <Mail className="h-3 w-3" />
                             Email
                           </Button>
+                        )}
+
+                        {/* Delete User Button */}
+                        {currentUser?.isMasterAdmin && !profile.isMasterAdmin && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex items-center gap-1 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                                Excluir
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Excluir usuário</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tem certeza que deseja excluir o usuário <strong>{formData.personalInfo.name}</strong>? 
+                                  Esta ação não pode ser desfeita e todos os dados do usuário serão perdidos permanentemente.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteUser(profile.id, formData.personalInfo.name)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Excluir usuário
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         )}
 
                         {/* Admin Controls */}

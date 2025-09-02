@@ -184,6 +184,32 @@ export const authService = {
     }
 
     return true;
+  },
+
+  deleteUserProfile: (userId: string): boolean => {
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser?.isMasterAdmin) {
+      return false; // Only master admin can delete users
+    }
+
+    const users = getUsers();
+    const profiles = getUserProfiles();
+    
+    // Don't allow deleting master admin
+    const userToDelete = users.find(u => u.id === userId);
+    if (userToDelete?.isMasterAdmin) {
+      return false;
+    }
+
+    // Remove from users list
+    const filteredUsers = users.filter(u => u.id !== userId);
+    localStorage.setItem(USERS_KEY, JSON.stringify(filteredUsers));
+
+    // Remove from profiles list
+    const filteredProfiles = profiles.filter(p => p.id !== userId);
+    localStorage.setItem('hexaco_profiles', JSON.stringify(filteredProfiles));
+
+    return true;
   }
 };
 
