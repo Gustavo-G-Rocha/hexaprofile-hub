@@ -13,7 +13,8 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
     whatsapp: "",
     email: "",
     confirmEmail: "",
-    state: ""
+    state: "",
+    photo: ""
   };
 
   const formatPhoneNumber = (value: string) => {
@@ -48,6 +49,18 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
         [field]: formattedValue
       }
     });
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        handleChange("photo", base64);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -108,6 +121,26 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
             placeholder="Digite seu estado"
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="photo">Foto de perfil (opcional)</Label>
+          <div className="flex items-center gap-4">
+            <Input
+              id="photo"
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="flex-1"
+            />
+            {personalInfo.photo && (
+              <img
+                src={personalInfo.photo}
+                alt="Preview"
+                className="w-16 h-16 rounded-full object-cover border-2 border-border"
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

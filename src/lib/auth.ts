@@ -15,6 +15,7 @@ export interface FormData {
     email: string;
     confirmEmail: string;
     state: string;
+    photo?: string;
   };
   skills: string[];
   subSkills: Record<string, string[]>;

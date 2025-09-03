@@ -11,6 +11,7 @@ import { subSkillsMap } from "@/lib/skillsData";
 import { useNavigate } from "react-router-dom";
 import { Search, User, MapPin, Briefcase, Shield, ShieldCheck, Crown, MessageCircle, Mail, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import HexagonChart from "@/components/HexagonChart";
 
 const AdminDashboard = () => {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
@@ -399,7 +400,33 @@ const AdminDashboard = () => {
                   </CardHeader>
                   
                   <CardContent>
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6">
+                      {/* User Photo and HEXACO Chart */}
+                      <div className="space-y-4">
+                        <h3 className="font-semibold">Perfil</h3>
+                        
+                        {/* User Photo */}
+                        <div className="flex justify-center">
+                          {formData.personalInfo.photo ? (
+                            <img
+                              src={formData.personalInfo.photo}
+                              alt={`Foto de ${formData.personalInfo.name}`}
+                              className="w-24 h-24 rounded-full object-cover border-4 border-border"
+                            />
+                          ) : (
+                            <div className="w-24 h-24 rounded-full bg-muted border-4 border-border flex items-center justify-center">
+                              <User className="h-12 w-12 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* HEXACO Chart */}
+                        {formData.hexacoScores && (
+                          <div className="flex justify-center">
+                            <HexagonChart scores={formData.hexacoScores} size={200} />
+                          </div>
+                        )}
+                      </div>
                       {/* Skills Section */}
                       <div className="space-y-4">
                         <h3 className="font-semibold">Áreas de Conhecimento</h3>
@@ -455,9 +482,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* HEXACO Scores */}
+                      {/* HEXACO Scores Details */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold">Perfil HEXACO</h3>
+                        <h3 className="font-semibold">Detalhes HEXACO</h3>
                         {formData.hexacoScores ? (
                           <div className="space-y-2">
                             {Object.entries(formData.hexacoScores).map(([dimension, score]) => (
