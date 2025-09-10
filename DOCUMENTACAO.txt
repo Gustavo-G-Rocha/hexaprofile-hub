@@ -1,0 +1,173 @@
+===========================================
+SISTEMA DE AVALIAÇÃO HEXACO - DOCUMENTAÇÃO
+===========================================
+
+VISÃO GERAL
+-----------
+Este é um sistema web para avaliação de personalidade baseado no modelo HEXACO, 
+que permite aos usuários completarem uma avaliação psicológica completa e 
+aos administradores gerenciarem usuários e visualizarem resultados.
+
+MODELO HEXACO
+-------------
+O HEXACO é um modelo de personalidade de seis fatores:
+- H (Honesty-Humility): Honestidade-Humildade
+- E (Emotionality): Emocionalidade  
+- X (eXtraversion): Extroversão
+- A (Agreeableness): Amabilidade
+- C (Conscientiousness): Conscienciosidade
+- O (Openness): Abertura à Experiência
+
+FUNCIONALIDADES PRINCIPAIS
+--------------------------
+
+1. SISTEMA DE AUTENTICAÇÃO
+   - Cadastro e login de usuários
+   - Diferentes níveis de acesso (usuário, admin, master admin)
+   - Armazenamento local dos dados de usuário
+
+2. FORMULÁRIO MULTI-ETAPAS
+   - Etapa 1: Informações Pessoais (nome, email, telefone, estado, foto)
+   - Etapa 2: Áreas de Conhecimento (seleção de habilidades técnicas)
+   - Etapa 3: Habilidades Específicas (sub-habilidades por área)
+   - Etapa 4: Habilidades Comportamentais
+   - Etapa 5: Avaliação HEXACO (24 questões)
+   - Etapa 6: Currículo (experiências, idiomas, educação)
+   - Etapa 7: Resultados (gráfico hexagonal dos scores HEXACO)
+
+3. PAINEL ADMINISTRATIVO
+   - Visualização de todos os usuários cadastrados
+   - Promoção/revogação de privilégios administrativos
+   - Exclusão de usuários (apenas master admin)
+   - Visualização de perfis completos com gráficos HEXACO
+   - Fotos dos usuários
+
+ESTRUTURA DE ARQUIVOS
+--------------------
+
+src/
+├── components/
+│   ├── ui/                    # Componentes base (shadcn/ui)
+│   ├── form/                  # Componentes do formulário
+│   │   ├── PersonalInfoStep.tsx      # Etapa 1 - Dados pessoais
+│   │   ├── SkillsStep.tsx           # Etapa 2 - Áreas conhecimento
+│   │   ├── SubSkillsStep.tsx        # Etapa 3 - Habilidades específicas
+│   │   ├── BehavioralSkillsStep.tsx # Etapa 4 - Habilidades comportamentais
+│   │   ├── HexacoStep.tsx           # Etapa 5 - Avaliação HEXACO
+│   │   ├── CurriculumStep.tsx       # Etapa 6 - Currículo
+│   │   └── ResultsStep.tsx          # Etapa 7 - Resultados
+│   └── HexagonChart.tsx       # Gráfico hexagonal dos resultados
+├── pages/
+│   ├── Index.tsx              # Página inicial
+│   ├── Login.tsx              # Login e cadastro
+│   ├── FormWizard.tsx         # Formulário principal
+│   ├── UserDashboard.tsx      # Dashboard do usuário
+│   └── AdminDashboard.tsx     # Dashboard administrativo
+├── lib/
+│   ├── auth.ts                # Sistema de autenticação
+│   ├── hexaco.ts              # Lógica de cálculo HEXACO
+│   ├── skillsData.ts          # Dados das habilidades
+│   └── utils.ts               # Utilitários gerais
+└── hooks/                     # Hooks personalizados
+
+FLUXO DE USUÁRIO
+---------------
+
+1. NOVO USUÁRIO:
+   Acesso inicial → Cadastro → Login → Formulário (7 etapas) → Dashboard
+
+2. USUÁRIO EXISTENTE:
+   Login → Dashboard (pode refazer formulário, exceto HEXACO)
+
+3. ADMINISTRADOR:
+   Login → Painel Admin → Gerenciamento de usuários
+
+REGRAS DE NEGÓCIO
+-----------------
+
+1. HEXACO ÚNICO:
+   - Cada usuário só pode fazer o teste HEXACO uma vez
+   - Em tentativas posteriores, a etapa é automaticamente pulada
+   - Mantém os resultados originais
+
+2. NÍVEIS DE ACESSO:
+   - Usuário: Acessa apenas próprio formulário e dashboard
+   - Admin: Visualiza todos usuários, pode promover outros
+   - Master Admin: Todas permissões + excluir usuários
+
+3. VALIDAÇÕES:
+   - Campos obrigatórios em cada etapa
+   - Email válido e confirmação
+   - Pelo menos uma seleção em listas obrigatórias
+   - Todas as 24 perguntas HEXACO devem ser respondidas
+
+4. RELACIONAMENTO DE DADOS:
+   - Ao desmarcar área de conhecimento, habilidades específicas são removidas
+   - Dados persistidos no localStorage do navegador
+
+TECNOLOGIAS UTILIZADAS
+---------------------
+- React 18 + TypeScript
+- Vite (bundler)
+- Tailwind CSS (estilização)
+- Shadcn/ui (componentes)
+- React Router (roteamento)
+- React Hook Form (formulários)
+- Recharts (gráficos)
+- Local Storage (persistência)
+
+COMO USAR O SISTEMA
+------------------
+
+1. PRIMEIRO ACESSO:
+   - Acesse o sistema
+   - Clique em "Cadastro"
+   - Preencha email e senha
+   - Complete o formulário de 7 etapas
+   - Visualize seus resultados no dashboard
+
+2. ADMINISTRAÇÃO:
+   - Login master admin: 2007.gustavo.g.r@gmail.com / 12345678
+   - Acesse painel administrativo
+   - Gerencie usuários e visualize perfis
+
+OBSERVAÇÕES IMPORTANTES
+----------------------
+
+1. DADOS LOCAIS:
+   - Todos os dados são armazenados no localStorage
+   - Limpar dados do navegador apaga todas informações
+   - Não há sincronização entre dispositivos
+
+2. SEGURANÇA:
+   - Sistema básico de autenticação para demonstração
+   - Não adequado para produção sem implementar backend real
+   - Senhas armazenadas em texto plano no localStorage
+
+3. RESPONSIVIDADE:
+   - Interface adaptada para desktop e mobile
+   - Componentes responsivos com Tailwind CSS
+
+4. EXTENSIBILIDADE:
+   - Estrutura modular permite fácil adição de novas funcionalidades
+   - Componentes reutilizáveis com shadcn/ui
+   - Sistema de tipos TypeScript para maior segurança
+
+MANUTENÇÃO E DESENVOLVIMENTO
+---------------------------
+
+Para adicionar novas funcionalidades:
+1. Criar componentes na pasta apropriada
+2. Atualizar tipos em lib/auth.ts se necessário
+3. Implementar validações no FormWizard.tsx
+4. Atualizar dashboard correspondente
+
+Para modificar avaliação HEXACO:
+1. Editar perguntas em lib/hexaco.ts
+2. Ajustar lógica de cálculo se necessário
+3. Validar no HexacoStep.tsx
+
+Para adicionar novos tipos de usuário:
+1. Estender interface User em auth.ts
+2. Implementar lógica de autorização
+3. Criar rotas/componentes específicos
