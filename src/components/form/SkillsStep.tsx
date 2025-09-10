@@ -13,12 +13,25 @@ const SkillsStep = ({ data, onUpdate }: SkillsStepProps) => {
 
   const handleSkillChange = (skill: string, checked: boolean) => {
     let updatedSkills;
+    let updatedData = {};
+    
     if (checked) {
       updatedSkills = [...skills, skill];
+      updatedData = { skills: updatedSkills };
     } else {
       updatedSkills = skills.filter(s => s !== skill);
+      
+      // Remove subSkills relacionadas quando a skill principal é desmarcada
+      const currentSubSkills = data.subSkills || {};
+      const { [skill]: removedSubSkill, ...remainingSubSkills } = currentSubSkills;
+      
+      updatedData = { 
+        skills: updatedSkills, 
+        subSkills: remainingSubSkills 
+      };
     }
-    onUpdate({ skills: updatedSkills });
+    
+    onUpdate(updatedData);
   };
 
   return (
