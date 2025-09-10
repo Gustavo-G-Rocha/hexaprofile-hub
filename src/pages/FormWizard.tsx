@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import PersonalInfoStep from "@/components/form/PersonalInfoStep";
 import SkillsStep from "@/components/form/SkillsStep";
 import SubSkillsStep from "@/components/form/SubSkillsStep";
@@ -16,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const FormWizard = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [hexacoCompleted, setHexacoCompleted] = useState(false);
   const [formData, setFormData] = useState<Partial<FormData>>({
     personalInfo: {
       name: "",
@@ -38,6 +40,26 @@ const FormWizard = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Check if user has already completed HEXACO
+  useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (user) {
+      const profiles = authService.getUserProfiles();
+      const userProfile = profiles.find(p => p.id === user.id);
+      
+      if (userProfile?.formData) {
+        // Load existing form data
+        setFormData(userProfile.formData);
+        
+        // Check if HEXACO is already completed
+        if (userProfile.formData.hexacoResponses && 
+            Object.keys(userProfile.formData.hexacoResponses).length >= 24) {
+          setHexacoCompleted(true);
+        }
+      }
+    }
+  }, []);
 
   const steps = [
     { title: "Informações Pessoais", component: PersonalInfoStep },
@@ -171,9 +193,22 @@ const FormWizard = () => {
       return;
     }
     
+    // Skip HEXACO step if already completed
+    let nextStep = currentStep + 1;
+    if (nextStep === 4 && hexacoCompleted) {
+      nextStep = 5; // Skip to Curriculum step
+      toast({
+        title: "Avaliação HEXACO já concluída",
+        description: "Você já completou a avaliação HEXACO anteriormente."
+      });
+    }
+    
     if (currentStep === steps.length - 2) {
-      // Calculate HEXACO scores before moving to results
-      const scores = calculateHexacoScores(formData.hexacoResponses || {});
+      // Calculate HEXACO scores before moving to results (only if not already completed)
+      let scores = formData.hexacoScores;
+      if (!hexacoCompleted && formData.hexacoResponses) {
+        scores = calculateHexacoScores(formData.hexacoResponses);
+      }
       const updatedFormData = { ...formData, hexacoScores: scores };
       setFormData(updatedFormData);
       
@@ -187,11 +222,16 @@ const FormWizard = () => {
         });
       }
     }
-    setCurrentStep(prev => Math.min(prev + 1, steps.length - 1));
+    setCurrentStep(Math.min(nextStep, steps.length - 1));
   };
 
   const handlePrev = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 0));
+    // Skip HEXACO step when going back if already completed
+    let prevStep = currentStep - 1;
+    if (prevStep === 4 && hexacoCompleted) {
+      prevStep = 3; // Skip back to Behavioral Skills step
+    }
+    setCurrentStep(Math.max(prevStep, 0));
   };
 
   const handleFinish = () => {
@@ -236,10 +276,19 @@ const FormWizard = () => {
           </CardHeader>
           
           <CardContent>
-            <CurrentStepComponent 
-              data={formData} 
-              onUpdate={updateFormData}
-            />
+            {currentStep === 4 && hexacoCompleted ? (
+              <Alert>
+                <AlertDescription>
+                  Você já completou a avaliação HEXACO anteriormente. Esta etapa não pode ser refeita.
+                  Seus resultados anteriores serão mantidos.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <CurrentStepComponent 
+                data={formData} 
+                onUpdate={updateFormData}
+              />
+            )}
             
             <div className="flex justify-between mt-8">
               <Button 
