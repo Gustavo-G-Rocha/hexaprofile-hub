@@ -32,7 +32,7 @@ const Login = () => {
     } else {
       toast({
         title: "Erro no login",
-        description: "Email ou senha inválidos. Use 'test123' como senha.",
+        description: "Email ou senha inválidos.",
         variant: "destructive"
       });
     }
@@ -52,10 +52,10 @@ const Login = () => {
       } else {
         navigate("/form");
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erro no cadastro",
-        description: "Não foi possível criar sua conta.",
+        description: error.message || "Não foi possível criar sua conta.",
         variant: "destructive"
       });
     }
@@ -107,11 +107,6 @@ const Login = () => {
                 <Button type="submit" className="w-full">
                   Entrar
                 </Button>
-                
-                <p className="text-sm text-muted-foreground text-center">
-                  Para teste, use qualquer email e senha 'test123'<br/>
-                  Admin: admin@test.com
-                </p>
               </form>
             </TabsContent>
             

@@ -6,6 +6,7 @@ export interface User {
   isAdmin?: boolean;
   isMasterAdmin?: boolean;
   role?: 'user' | 'admin' | 'master';
+  password?: string;
 }
 
 export interface FormData {
@@ -59,7 +60,8 @@ export const authService = {
           name: 'Admin Master',
           isAdmin: true,
           isMasterAdmin: true,
-          role: 'master'
+          role: 'master',
+          password: '12345678'
         };
         users.push(user);
         localStorage.setItem(USERS_KEY, JSON.stringify(users));
@@ -72,7 +74,8 @@ export const authService = {
       return user;
     }
     
-    if (user && password === 'test123') {
+    // Check user credentials
+    if (user && user.password === password) {
       localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
       return user;
     }
@@ -81,9 +84,16 @@ export const authService = {
 
   register: (email: string, password: string): User => {
     const users = getUsers();
+    
+    // Check if user already exists
+    if (users.find(u => u.email === email)) {
+      throw new Error('Usuário já existe');
+    }
+    
     const newUser: User = {
       id: Date.now().toString(),
       email,
+      password,
       isAdmin: email === 'admin@test.com',
       role: email === 'admin@test.com' ? 'admin' : 'user'
     };
