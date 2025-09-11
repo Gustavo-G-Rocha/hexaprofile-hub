@@ -1,5 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { FormData } from "@/lib/auth";
 import { dimensionNames } from "@/lib/hexaco";
 import HexagonChart from "@/components/HexagonChart";
@@ -10,7 +14,12 @@ interface ResultsStepProps {
   onUpdate: (data: any) => void;
 }
 
-const ResultsStep = ({ data }: ResultsStepProps) => {
+const ResultsStep = ({ data, onUpdate }: ResultsStepProps) => {
+  const handleChange = (field: string, value: any) => {
+    onUpdate({
+      [field]: value
+    });
+  };
   if (!data.hexacoScores) {
     return (
       <div className="text-center py-8">
@@ -207,6 +216,55 @@ const ResultsStep = ({ data }: ResultsStepProps) => {
           </CardContent>
         </Card>
       )}
+
+      {/* Final Questions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Perguntas Finais</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="important-truth">
+              Sobre que verdade importante pouquíssimas pessoas concordam com você? *
+            </Label>
+            <Textarea
+              id="important-truth"
+              value={data.importantTruth || ""}
+              onChange={(e) => handleChange("importantTruth", e.target.value)}
+              placeholder="Digite sua resposta aqui..."
+              required
+              className="min-h-20"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="public-servant"
+                checked={data.isPublicServant || false}
+                onCheckedChange={(checked) => 
+                  handleChange("isPublicServant", checked as boolean)
+                }
+              />
+              <Label htmlFor="public-servant">
+                Você é servidor público?
+              </Label>
+            </div>
+
+            {data.isPublicServant && (
+              <div className="space-y-2 ml-6">
+                <Label htmlFor="public-servant-area">Em qual área?</Label>
+                <Input
+                  id="public-servant-area"
+                  value={data.publicServantArea || ""}
+                  onChange={(e) => handleChange("publicServantArea", e.target.value)}
+                  placeholder="Digite a área de atuação"
+                />
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

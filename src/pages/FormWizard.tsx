@@ -183,6 +183,18 @@ const FormWizard = () => {
         
         return true;
       
+      case 6: // Results
+        const { importantTruth } = formData;
+        if (!importantTruth || importantTruth.trim() === '') {
+          toast({
+            title: "Resposta obrigatória",
+            description: "Por favor, responda à pergunta sobre verdade importante.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        return true;
+      
       default:
         return true;
     }

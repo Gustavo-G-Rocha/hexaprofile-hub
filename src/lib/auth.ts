@@ -17,6 +17,8 @@ export interface FormData {
     confirmEmail: string;
     state: string;
     photo?: string;
+    isMBLCoordinator?: boolean;
+    didMBLAcademy?: boolean;
   };
   skills: string[];
   subSkills: Record<string, string[]>;
@@ -36,6 +38,9 @@ export interface FormData {
     }>;
   };
   hexacoScores?: Record<string, number>;
+  importantTruth?: string;
+  isPublicServant?: boolean;
+  publicServantArea?: string;
 }
 
 export interface UserProfile extends User {

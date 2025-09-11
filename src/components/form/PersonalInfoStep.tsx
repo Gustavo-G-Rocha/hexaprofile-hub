@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { FormData } from "@/lib/auth";
 
 interface PersonalInfoStepProps {
@@ -14,7 +15,9 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
     email: "",
     confirmEmail: "",
     state: "",
-    photo: ""
+    photo: "",
+    isMBLCoordinator: false,
+    didMBLAcademy: false
   };
 
   const formatPhoneNumber = (value: string) => {
@@ -36,10 +39,10 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
     }
   };
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | boolean) => {
     let formattedValue = value;
     
-    if (field === 'whatsapp') {
+    if (field === 'whatsapp' && typeof value === 'string') {
       formattedValue = formatPhoneNumber(value);
     }
     
@@ -140,6 +143,36 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
                 className="w-16 h-16 rounded-full object-cover border-2 border-border"
               />
             )}
+          </div>
+        </div>
+
+        <div className="space-y-4 border-t pt-4">
+          <h3 className="font-semibold">Perguntas sobre MBL</h3>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="mbl-coordinator"
+              checked={personalInfo.isMBLCoordinator}
+              onCheckedChange={(checked) => 
+                handleChange("isMBLCoordinator", checked as boolean)
+              }
+            />
+            <Label htmlFor="mbl-coordinator">
+              Você já é coordenador do MBL?
+            </Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="mbl-academy"
+              checked={personalInfo.didMBLAcademy}
+              onCheckedChange={(checked) => 
+                handleChange("didMBLAcademy", checked as boolean)
+              }
+            />
+            <Label htmlFor="mbl-academy">
+              Você já fez academia MBL?
+            </Label>
           </div>
         </div>
       </div>
