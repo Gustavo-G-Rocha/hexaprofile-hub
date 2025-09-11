@@ -249,6 +249,54 @@ const CurriculumStep = ({ data, onUpdate }: CurriculumStepProps) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Final Questions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Perguntas Finais</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            <Label htmlFor="important-truth" className="text-sm font-medium">
+              Sobre que verdade importante pouquíssimas pessoas concordam com você? *
+            </Label>
+            <Textarea
+              id="important-truth"
+              value={data.importantTruth || ""}
+              onChange={(e) => onUpdate({ importantTruth: e.target.value })}
+              placeholder="Digite sua resposta aqui..."
+              rows={4}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="public-servant"
+                checked={data.isPublicServant || false}
+                onCheckedChange={(checked) => onUpdate({ isPublicServant: checked as boolean })}
+              />
+              <Label htmlFor="public-servant" className="text-sm font-medium">
+                Você é servidor público?
+              </Label>
+            </div>
+            
+            {data.isPublicServant && (
+              <div className="space-y-2 pl-6">
+                <Label htmlFor="public-area" className="text-sm">
+                  Em qual área?
+                </Label>
+                <Input
+                  id="public-area"
+                  value={data.publicServiceArea || ""}
+                  onChange={(e) => onUpdate({ publicServiceArea: e.target.value })}
+                  placeholder="Digite a área de atuação"
+                />
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

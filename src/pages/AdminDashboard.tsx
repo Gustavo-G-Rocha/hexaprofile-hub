@@ -426,7 +426,49 @@ const AdminDashboard = () => {
                             <HexagonChart scores={formData.hexacoScores} size={200} />
                           </div>
                         )}
-                      </div>
+                         
+                         {/* Personal Questions */}
+                         <div className="space-y-2">
+                           <h4 className="text-sm font-medium">Informações MBL:</h4>
+                           <div className="space-y-1 text-xs">
+                             <div>
+                               <span className="font-medium">Coordenador MBL:</span> {formData.personalInfo.isMblCoordinator ? "Sim" : "Não"}
+                             </div>
+                             <div>
+                               <span className="font-medium">Academia MBL:</span> {
+                                 formData.personalInfo.mblAcademyStatus === "ja-fiz" ? "Já fiz" :
+                                 formData.personalInfo.mblAcademyStatus === "estou-fazendo" ? "Estou fazendo" :
+                                 formData.personalInfo.mblAcademyStatus === "ainda-nao-fiz" ? "Ainda não fiz" :
+                                 "Não informado"
+                               }
+                             </div>
+                           </div>
+                         </div>
+
+                         {/* Final Questions */}
+                         {(formData.importantTruth || formData.isPublicServant) && (
+                           <div className="space-y-2">
+                             <h4 className="text-sm font-medium">Perguntas Finais:</h4>
+                             <div className="space-y-1 text-xs">
+                               {formData.importantTruth && (
+                                 <div>
+                                   <span className="font-medium">Verdade importante:</span>
+                                   <p className="text-muted-foreground bg-muted p-2 rounded text-xs mt-1">
+                                     {formData.importantTruth}
+                                   </p>
+                                 </div>
+                               )}
+                               <div>
+                               <span className="font-medium">Servidor Público:</span> {
+                                 formData.isPublicServant 
+                                   ? `Sim - ${formData.publicServiceArea || "Área não especificada"}` 
+                                   : "Não"
+                               }
+                               </div>
+                             </div>
+                           </div>
+                         )}
+                       </div>
                       {/* Skills Section */}
                       <div className="space-y-4">
                         <h3 className="font-semibold">Áreas de Conhecimento</h3>

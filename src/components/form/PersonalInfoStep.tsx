@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormData } from "@/lib/auth";
 
 interface PersonalInfoStepProps {
@@ -16,8 +17,8 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
     confirmEmail: "",
     state: "",
     photo: "",
-    isMBLCoordinator: false,
-    didMBLAcademy: false
+    isMblCoordinator: false,
+    mblAcademyStatus: ""
   };
 
   const formatPhoneNumber = (value: string) => {
@@ -39,7 +40,7 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
     }
   };
 
-  const handleChange = (field: string, value: string | boolean) => {
+  const updatePersonalInfo = (field: string, value: string | boolean) => {
     let formattedValue = value;
     
     if (field === 'whatsapp' && typeof value === 'string') {
@@ -60,7 +61,7 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64 = e.target?.result as string;
-        handleChange("photo", base64);
+        updatePersonalInfo("photo", base64);
       };
       reader.readAsDataURL(file);
     }
@@ -74,7 +75,7 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
           <Input
             id="name"
             value={personalInfo.name}
-            onChange={(e) => handleChange("name", e.target.value)}
+            onChange={(e) => updatePersonalInfo("name", e.target.value)}
             placeholder="Digite seu nome completo"
             required
           />
@@ -85,7 +86,7 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
           <Input
             id="whatsapp"
             value={personalInfo.whatsapp}
-            onChange={(e) => handleChange("whatsapp", e.target.value)}
+            onChange={(e) => updatePersonalInfo("whatsapp", e.target.value)}
             placeholder="(xx) xxxxx-xxxx"
             required
           />
@@ -97,7 +98,7 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
             id="email"
             type="email"
             value={personalInfo.email}
-            onChange={(e) => handleChange("email", e.target.value)}
+            onChange={(e) => updatePersonalInfo("email", e.target.value)}
             placeholder="seu@email.com"
             required
           />
@@ -109,7 +110,7 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
             id="confirmEmail"
             type="email"
             value={personalInfo.confirmEmail}
-            onChange={(e) => handleChange("confirmEmail", e.target.value)}
+            onChange={(e) => updatePersonalInfo("confirmEmail", e.target.value)}
             placeholder="seu@email.com"
             required
           />
@@ -120,7 +121,7 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
           <Input
             id="state"
             value={personalInfo.state}
-            onChange={(e) => handleChange("state", e.target.value)}
+            onChange={(e) => updatePersonalInfo("state", e.target.value)}
             placeholder="Digite seu estado"
             required
           />
@@ -146,35 +147,53 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
           </div>
         </div>
 
-        <div className="space-y-4 border-t pt-4">
-          <h3 className="font-semibold">Perguntas sobre MBL</h3>
-          
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="mbl-coordinator"
-              checked={personalInfo.isMBLCoordinator}
-              onCheckedChange={(checked) => 
-                handleChange("isMBLCoordinator", checked as boolean)
-              }
-            />
-            <Label htmlFor="mbl-coordinator">
-              Você já é coordenador do MBL?
-            </Label>
-          </div>
+          {/* MBL Questions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Perguntas sobre MBL</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Você já é coordenador do MBL?</Label>
+                <RadioGroup 
+                  value={personalInfo.isMblCoordinator ? "true" : "false"}
+                  onValueChange={(value) => updatePersonalInfo("isMblCoordinator", value === "true")}
+                  className="flex gap-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="true" id="mbl-coord-yes" />
+                    <Label htmlFor="mbl-coord-yes">Sim</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="false" id="mbl-coord-no" />
+                    <Label htmlFor="mbl-coord-no">Não</Label>
+                  </div>
+                </RadioGroup>
+              </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="mbl-academy"
-              checked={personalInfo.didMBLAcademy}
-              onCheckedChange={(checked) => 
-                handleChange("didMBLAcademy", checked as boolean)
-              }
-            />
-            <Label htmlFor="mbl-academy">
-              Você já fez academia MBL?
-            </Label>
-          </div>
-        </div>
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Você já fez academia MBL?</Label>
+                <RadioGroup 
+                  value={personalInfo.mblAcademyStatus || ""}
+                  onValueChange={(value) => updatePersonalInfo("mblAcademyStatus", value)}
+                  className="flex flex-col gap-3"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="ja-fiz" id="mbl-academy-done" />
+                    <Label htmlFor="mbl-academy-done">Já fiz</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="estou-fazendo" id="mbl-academy-doing" />
+                    <Label htmlFor="mbl-academy-doing">Estou fazendo</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="ainda-nao-fiz" id="mbl-academy-not" />
+                    <Label htmlFor="mbl-academy-not">Ainda não fiz</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </CardContent>
+          </Card>
       </div>
     </div>
   );

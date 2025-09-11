@@ -254,12 +254,12 @@ const ResultsStep = ({ data, onUpdate }: ResultsStepProps) => {
             {data.isPublicServant && (
               <div className="space-y-2 ml-6">
                 <Label htmlFor="public-servant-area">Em qual área?</Label>
-                <Input
-                  id="public-servant-area"
-                  value={data.publicServantArea || ""}
-                  onChange={(e) => handleChange("publicServantArea", e.target.value)}
-                  placeholder="Digite a área de atuação"
-                />
+                  <Input
+                    id="public-servant-area"
+                    value={data.publicServiceArea || ""}
+                    onChange={(e) => handleChange("publicServiceArea", e.target.value)}
+                    placeholder="Digite a área de atuação"
+                  />
               </div>
             )}
           </div>

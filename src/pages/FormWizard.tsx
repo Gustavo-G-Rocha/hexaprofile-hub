@@ -130,7 +130,7 @@ const FormWizard = () => {
         }
         return true;
       
-      case 5: // Curriculum
+      case 5: // Curriculum + Final Questions
         const { experiences, languages, education } = formData.curriculum || {};
         if (!experiences || experiences.length === 0) {
           toast({
@@ -181,9 +181,7 @@ const FormWizard = () => {
           return false;
         }
         
-        return true;
-      
-      case 6: // Results
+        // Validar pergunta obrigatória sobre verdade importante
         const { importantTruth } = formData;
         if (!importantTruth || importantTruth.trim() === '') {
           toast({
@@ -193,6 +191,10 @@ const FormWizard = () => {
           });
           return false;
         }
+        
+        return true;
+      
+      case 6: // Results - apenas visualização
         return true;
       
       default:
