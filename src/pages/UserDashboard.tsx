@@ -98,6 +98,43 @@ const UserDashboard = () => {
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <span>{formData.personalInfo.state}</span>
               </div>
+              
+              {/* MBL Information */}
+              {(formData.personalInfo.isMblCoordinator !== undefined || formData.personalInfo.mblAcademyStatus) && (
+                <div className="pt-2 border-t">
+                  <h4 className="text-sm font-semibold mb-2">Informações MBL</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">Coordenador MBL:</span>
+                      <Badge variant={formData.personalInfo.isMblCoordinator ? "default" : "secondary"}>
+                        {formData.personalInfo.isMblCoordinator ? "Sim" : "Não"}
+                      </Badge>
+                    </div>
+                    {formData.personalInfo.mblAcademyStatus && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Academia MBL:</span>
+                        <Badge variant="outline">
+                          {formData.personalInfo.mblAcademyStatus}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Photo */}
+              {formData.personalInfo.photo && (
+                <div className="pt-2">
+                  <span className="text-sm font-medium">Foto:</span>
+                  <div className="mt-2">
+                    <img 
+                      src={formData.personalInfo.photo} 
+                      alt="Foto do perfil" 
+                      className="w-20 h-20 object-cover rounded-full border"
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -203,7 +240,7 @@ const UserDashboard = () => {
         {formData.curriculum && (
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle>Currículo</CardTitle>
+              <CardTitle>Resumo Profissional</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {formData.curriculum.experiences.length > 0 && (
@@ -233,6 +270,55 @@ const UserDashboard = () => {
                   </div>
                 </div>
               )}
+
+              {formData.curriculum.education && formData.curriculum.education.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2">Formação</h3>
+                  <div className="space-y-2">
+                    {formData.curriculum.education.map((edu, index) => (
+                      <div key={index} className="border-l-2 border-secondary pl-4">
+                        <h4 className="font-medium">{edu.course}</h4>
+                        <p className="text-sm text-muted-foreground">{edu.institution}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Final Questions */}
+        {(formData.importantTruth || formData.isPublicServant) && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Perguntas Finais</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {formData.importantTruth && (
+                <div className="space-y-2">
+                  <h4 className="font-medium">Sobre que verdade importante pouquíssimas pessoas concordam com você?</h4>
+                  <div className="p-3 bg-muted rounded-md">
+                    <p className="text-sm">{formData.importantTruth}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Servidor público:</span>
+                  <Badge variant={formData.isPublicServant ? "default" : "secondary"}>
+                    {formData.isPublicServant ? "Sim" : "Não"}
+                  </Badge>
+                </div>
+
+                {formData.isPublicServant && formData.publicServiceArea && (
+                  <div className="ml-4">
+                    <span className="text-sm font-medium">Área de atuação:</span>
+                    <p className="text-sm text-muted-foreground mt-1">{formData.publicServiceArea}</p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         )}

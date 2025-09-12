@@ -37,7 +37,6 @@ export interface FormData {
       institution: string;
     }>;
   };
-  hexacoResponses: Record<string, number>;
   hexacoScores?: Record<string, number>;
   importantTruth?: string;
   isPublicServant?: boolean;

@@ -1,9 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { FormData } from "@/lib/auth";
 import { dimensionNames } from "@/lib/hexaco";
 import HexagonChart from "@/components/HexagonChart";
@@ -11,15 +8,9 @@ import { CheckCircle, User, Mail, Phone, MapPin } from "lucide-react";
 
 interface ResultsStepProps {
   data: Partial<FormData>;
-  onUpdate: (data: any) => void;
 }
 
-const ResultsStep = ({ data, onUpdate }: ResultsStepProps) => {
-  const handleChange = (field: string, value: any) => {
-    onUpdate({
-      [field]: value
-    });
-  };
+const ResultsStep = ({ data }: ResultsStepProps) => {
   if (!data.hexacoScores) {
     return (
       <div className="text-center py-8">
@@ -217,54 +208,40 @@ const ResultsStep = ({ data, onUpdate }: ResultsStepProps) => {
         </Card>
       )}
 
-      {/* Final Questions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Perguntas Finais</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="important-truth">
-              Sobre que verdade importante pouquíssimas pessoas concordam com você? *
-            </Label>
-            <Textarea
-              id="important-truth"
-              value={data.importantTruth || ""}
-              onChange={(e) => handleChange("importantTruth", e.target.value)}
-              placeholder="Digite sua resposta aqui..."
-              required
-              className="min-h-20"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="public-servant"
-                checked={data.isPublicServant || false}
-                onCheckedChange={(checked) => 
-                  handleChange("isPublicServant", checked as boolean)
-                }
-              />
-              <Label htmlFor="public-servant">
-                Você é servidor público?
-              </Label>
-            </div>
-
-            {data.isPublicServant && (
-              <div className="space-y-2 ml-6">
-                <Label htmlFor="public-servant-area">Em qual área?</Label>
-                  <Input
-                    id="public-servant-area"
-                    value={data.publicServiceArea || ""}
-                    onChange={(e) => handleChange("publicServiceArea", e.target.value)}
-                    placeholder="Digite a área de atuação"
-                  />
+      {/* Final Questions - Read Only */}
+      {(data.importantTruth || data.isPublicServant) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Perguntas Finais</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {data.importantTruth && (
+              <div className="space-y-2">
+                <Label>Sobre que verdade importante pouquíssimas pessoas concordam com você?</Label>
+                <div className="p-3 bg-muted rounded-md">
+                  <p className="text-sm">{data.importantTruth}</p>
+                </div>
               </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Servidor público:</span>
+                <Badge variant={data.isPublicServant ? "default" : "secondary"}>
+                  {data.isPublicServant ? "Sim" : "Não"}
+                </Badge>
+              </div>
+
+              {data.isPublicServant && data.publicServiceArea && (
+                <div className="ml-4">
+                  <span className="text-sm font-medium">Área de atuação:</span>
+                  <p className="text-sm text-muted-foreground mt-1">{data.publicServiceArea}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

@@ -74,11 +74,11 @@ const FormWizard = () => {
   const validateCurrentStep = () => {
     switch (currentStep) {
       case 0: // Personal Info
-        const { name, whatsapp, email, confirmEmail, state } = formData.personalInfo || {};
-        if (!name || !whatsapp || !email || !confirmEmail || !state) {
+        const { name, whatsapp, email, confirmEmail, state, photo } = formData.personalInfo || {};
+        if (!name || !whatsapp || !email || !confirmEmail || !state || !photo) {
           toast({
             title: "Campos obrigatórios",
-            description: "Por favor, preencha todos os campos obrigatórios.",
+            description: "Por favor, preencha todos os campos obrigatórios, incluindo a foto.",
             variant: "destructive"
           });
           return false;
