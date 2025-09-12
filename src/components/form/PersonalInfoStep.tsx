@@ -128,7 +128,7 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="photo">Foto de perfil (opcional)</Label>
+          <Label htmlFor="photo">Foto de perfil</Label>
           <div className="flex items-center gap-4">
             <Input
               id="photo"

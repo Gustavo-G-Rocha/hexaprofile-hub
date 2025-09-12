@@ -469,7 +469,84 @@ const AdminDashboard = () => {
                            </div>
                          )}
                        </div>
-                      {/* Skills Section */}
+                      {/* Curriculum Information */}
+                      <div className="space-y-4">
+                        <h3 className="font-semibold">Experiência Profissional e Formação</h3>
+                        
+                        {/* Professional Experiences */}
+                        {formData.curriculum?.experiences && formData.curriculum.experiences.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-medium">Últimas experiências profissionais:</h4>
+                            <div className="space-y-2">
+                              {formData.curriculum.experiences.slice(0, 3).map((exp, index) => (
+                                <div key={index} className="text-xs bg-muted p-2 rounded">
+                                  <div className="font-medium">{exp.role}</div>
+                                  <div className="text-muted-foreground">{exp.company} - {exp.duration}</div>
+                                </div>
+                              ))}
+                              {formData.curriculum.experiences.length > 3 && (
+                                <div className="text-xs text-muted-foreground">
+                                  +{formData.curriculum.experiences.length - 3} experiência(s) adicional(is)
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Languages */}
+                        {formData.curriculum?.languages && formData.curriculum.languages.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-medium">Idiomas:</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {formData.curriculum.languages.map((lang) => (
+                                <Badge key={lang} variant="outline" className="text-xs">
+                                  {lang}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Portfolio */}
+                        {formData.curriculum?.portfolio && (
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-medium">Link do portfólio:</h4>
+                            <a 
+                              href={formData.curriculum.portfolio.startsWith('http') ? formData.curriculum.portfolio : `https://${formData.curriculum.portfolio}`}
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary hover:underline break-all"
+                            >
+                              {formData.curriculum.portfolio}
+                            </a>
+                          </div>
+                        )}
+
+                        {/* Education */}
+                        {formData.curriculum?.education && formData.curriculum.education.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-medium">Formações:</h4>
+                            <div className="space-y-2">
+                              {formData.curriculum.education.slice(0, 3).map((edu, index) => (
+                                <div key={index} className="text-xs bg-muted p-2 rounded">
+                                  {edu.educationLevel && (
+                                    <div className="font-medium text-primary">
+                                      {edu.educationLevel.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                    </div>
+                                  )}
+                                  <div className="font-medium">{edu.course}</div>
+                                  <div className="text-muted-foreground">{edu.institution}</div>
+                                </div>
+                              ))}
+                              {formData.curriculum.education.length > 3 && (
+                                <div className="text-xs text-muted-foreground">
+                                  +{formData.curriculum.education.length - 3} formação(ões) adicional(is)
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                       <div className="space-y-4">
                         <h3 className="font-semibold">Áreas de Conhecimento</h3>
                         <div className="flex flex-wrap gap-2">

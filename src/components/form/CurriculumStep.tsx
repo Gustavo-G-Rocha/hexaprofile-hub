@@ -233,13 +233,22 @@ const CurriculumStep = ({ data, onUpdate }: CurriculumStepProps) => {
                       <SelectValue placeholder="Selecione o nível de escolaridade" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ensino-fundamental">Ensino Fundamental</SelectItem>
-                      <SelectItem value="ensino-medio">Ensino Médio</SelectItem>
-                      <SelectItem value="ensino-tecnico">Ensino Técnico</SelectItem>
-                      <SelectItem value="ensino-superior">Ensino Superior</SelectItem>
-                      <SelectItem value="pos-graduacao">Pós-graduação</SelectItem>
-                      <SelectItem value="mestrado">Mestrado</SelectItem>
-                      <SelectItem value="doutorado">Doutorado</SelectItem>
+                      <SelectItem value="ensino-fundamental-incompleto">Ensino Fundamental Incompleto</SelectItem>
+                      <SelectItem value="ensino-fundamental-completo">Ensino Fundamental Completo</SelectItem>
+                      <SelectItem value="ensino-medio-incompleto">Ensino Médio Incompleto</SelectItem>
+                      <SelectItem value="ensino-medio-completo">Ensino Médio Completo</SelectItem>
+                      <SelectItem value="ensino-tecnico-incompleto">Ensino Técnico Incompleto</SelectItem>
+                      <SelectItem value="ensino-tecnico-completo">Ensino Técnico Completo</SelectItem>
+                      <SelectItem value="ensino-superior-incompleto">Ensino Superior Incompleto</SelectItem>
+                      <SelectItem value="ensino-superior-completo">Ensino Superior Completo</SelectItem>
+                      <SelectItem value="pos-graduacao-incompleta">Pós-graduação Incompleta</SelectItem>
+                      <SelectItem value="pos-graduacao-completa">Pós-graduação Completa</SelectItem>
+                      <SelectItem value="mestrado-incompleto">Mestrado Incompleto</SelectItem>
+                      <SelectItem value="mestrado-completo">Mestrado Completo</SelectItem>
+                      <SelectItem value="doutorado-incompleto">Doutorado Incompleto</SelectItem>
+                      <SelectItem value="doutorado-completo">Doutorado Completo</SelectItem>
+                      <SelectItem value="pos-doutorado-incompleto">Pós-doutorado Incompleto</SelectItem>
+                      <SelectItem value="pos-doutorado-completo">Pós-doutorado Completo</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
