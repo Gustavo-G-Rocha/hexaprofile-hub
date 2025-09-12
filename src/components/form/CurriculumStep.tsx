@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { languages } from "@/lib/skillsData";
 import { FormData } from "@/lib/auth";
 import { Plus, Trash2 } from "lucide-react";
@@ -49,7 +50,7 @@ const CurriculumStep = ({ data, onUpdate }: CurriculumStepProps) => {
   };
 
   const addEducation = () => {
-    const newEducation = [...curriculum.education, { course: "", institution: "" }];
+    const newEducation = [...curriculum.education, { course: "", institution: "", educationLevel: "" }];
     updateCurriculum("education", newEducation);
   };
 
@@ -221,22 +222,45 @@ const CurriculumStep = ({ data, onUpdate }: CurriculumStepProps) => {
                 </Button>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-3">
+              <div className="space-y-3">
                 <div>
-                  <Label>Curso</Label>
-                  <Input
-                    value={edu.course}
-                    onChange={(e) => updateEducation(index, "course", e.target.value)}
-                    placeholder="Ex: Bacharelado em Ciência da Computação"
-                  />
+                  <Label>Nível de Escolaridade</Label>
+                  <Select 
+                    value={edu.educationLevel || ""} 
+                    onValueChange={(value) => updateEducation(index, "educationLevel", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o nível de escolaridade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ensino-fundamental">Ensino Fundamental</SelectItem>
+                      <SelectItem value="ensino-medio">Ensino Médio</SelectItem>
+                      <SelectItem value="ensino-tecnico">Ensino Técnico</SelectItem>
+                      <SelectItem value="ensino-superior">Ensino Superior</SelectItem>
+                      <SelectItem value="pos-graduacao">Pós-graduação</SelectItem>
+                      <SelectItem value="mestrado">Mestrado</SelectItem>
+                      <SelectItem value="doutorado">Doutorado</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div>
-                  <Label>Instituição de Ensino</Label>
-                  <Input
-                    value={edu.institution}
-                    onChange={(e) => updateEducation(index, "institution", e.target.value)}
-                    placeholder="Ex: Universidade Federal de São Paulo"
-                  />
+                
+                <div className="grid md:grid-cols-2 gap-3">
+                  <div>
+                    <Label>Curso</Label>
+                    <Input
+                      value={edu.course}
+                      onChange={(e) => updateEducation(index, "course", e.target.value)}
+                      placeholder="Ex: Bacharelado em Ciência da Computação"
+                    />
+                  </div>
+                  <div>
+                    <Label>Instituição de Ensino</Label>
+                    <Input
+                      value={edu.institution}
+                      onChange={(e) => updateEducation(index, "institution", e.target.value)}
+                      placeholder="Ex: Universidade Federal de São Paulo"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

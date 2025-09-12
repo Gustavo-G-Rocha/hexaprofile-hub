@@ -35,6 +35,7 @@ export interface FormData {
     education: Array<{
       course: string;
       institution: string;
+      educationLevel?: string;
     }>;
   };
   hexacoScores?: Record<string, number>;
