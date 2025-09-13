@@ -229,6 +229,15 @@ export const authService = {
     localStorage.setItem('hexaco_profiles', JSON.stringify(filteredProfiles));
 
     return true;
+  },
+
+  clearCompletion: (userId: string): void => {
+    const profiles = getUserProfiles();
+    const index = profiles.findIndex(p => p.id === userId);
+    if (index >= 0) {
+      delete (profiles[index] as any).completedAt;
+      localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
+    }
   }
 };
 

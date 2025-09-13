@@ -26,15 +26,9 @@ const UserDashboard = () => {
 
   const handleRetakeForm = () => {
     const user = authService.getCurrentUser();
-    if (user && userProfile) {
-      // Remove the completedAt date but keep the form data and HEXACO responses
-      const updatedProfile = { ...userProfile };
-      delete updatedProfile.completedAt;
-      
-      // Save the updated profile
-      authService.saveUserProfile(user.id, updatedProfile.formData as any);
-      
-      // Navigate to form
+    if (user) {
+      // Limpa o "completedAt" para permitir edição, mantendo respostas HEXACO e demais dados
+      authService.clearCompletion(user.id);
       navigate("/form");
     }
   };
