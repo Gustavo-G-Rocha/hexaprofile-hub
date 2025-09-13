@@ -18,7 +18,9 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
     state: "",
     photo: "",
     isMblCoordinator: false,
-    mblAcademyStatus: ""
+    mblAcademyStatus: "",
+    mblHistory: "",
+    wasMissionCollector: false
   };
 
   const formatPhoneNumber = (value: string) => {
@@ -189,6 +191,34 @@ const PersonalInfoStep = ({ data, onUpdate }: PersonalInfoStepProps) => {
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="ainda-nao-fiz" id="mbl-academy-not" />
                     <Label htmlFor="mbl-academy-not">Ainda não fiz</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Conte sua história na militância do MBL</Label>
+                <textarea
+                  value={personalInfo.mblHistory || ""}
+                  onChange={(e) => updatePersonalInfo("mblHistory", e.target.value)}
+                  placeholder="Conte um pouco sobre sua trajetória e experiência no MBL..."
+                  className="w-full min-h-[100px] p-3 border border-input rounded-md resize-vertical focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                />
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Você já foi coletor da Missão?</Label>
+                <RadioGroup 
+                  value={personalInfo.wasMissionCollector ? "true" : "false"}
+                  onValueChange={(value) => updatePersonalInfo("wasMissionCollector", value === "true")}
+                  className="flex gap-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="true" id="mission-collector-yes" />
+                    <Label htmlFor="mission-collector-yes">Sim</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="false" id="mission-collector-no" />
+                    <Label htmlFor="mission-collector-no">Não</Label>
                   </div>
                 </RadioGroup>
               </div>

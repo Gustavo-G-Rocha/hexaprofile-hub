@@ -19,6 +19,8 @@ export interface FormData {
     photo?: string;
     isMblCoordinator?: boolean;
     mblAcademyStatus?: string;
+    mblHistory?: string;
+    wasMissionCollector?: boolean;
   };
   skills: string[];
   subSkills: Record<string, string[]>;

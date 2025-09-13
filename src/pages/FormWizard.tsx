@@ -41,12 +41,18 @@ const FormWizard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if user has already completed HEXACO
+  // Check if user has already completed HEXACO and redirect if form is already completed
   useEffect(() => {
     const user = authService.getCurrentUser();
     if (user) {
       const profiles = authService.getUserProfiles();
       const userProfile = profiles.find(p => p.id === user.id);
+      
+      if (userProfile?.formData && userProfile?.completedAt) {
+        // User has already completed the form, redirect to dashboard
+        navigate("/dashboard");
+        return;
+      }
       
       if (userProfile?.formData) {
         // Load existing form data
@@ -59,7 +65,7 @@ const FormWizard = () => {
         }
       }
     }
-  }, []);
+  }, [navigate]);
 
   const steps = [
     { title: "Informações Pessoais", component: PersonalInfoStep },
