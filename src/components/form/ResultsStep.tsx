@@ -55,6 +55,45 @@ const ResultsStep = ({ data }: ResultsStepProps) => {
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <span>{data.personalInfo.state}</span>
               </div>
+              
+              {/* MBL Information */}
+              {(data.personalInfo.isMblCoordinator !== undefined || data.personalInfo.mblAcademyStatus || data.personalInfo.mblHistory || data.personalInfo.wasMissionCollector !== undefined) && (
+                <div className="pt-2 border-t">
+                  <h4 className="text-sm font-semibold mb-2">Informações MBL</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">Coordenador MBL:</span>
+                      <Badge variant={data.personalInfo.isMblCoordinator ? "default" : "secondary"}>
+                        {data.personalInfo.isMblCoordinator ? "Sim" : "Não"}
+                      </Badge>
+                    </div>
+                    {data.personalInfo.mblAcademyStatus && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Academia MBL:</span>
+                        <Badge variant="outline">
+                          {data.personalInfo.mblAcademyStatus}
+                        </Badge>
+                      </div>
+                    )}
+                    {data.personalInfo.mblHistory && (
+                      <div className="space-y-1">
+                        <span className="text-sm font-medium">História na militância do MBL:</span>
+                        <div className="p-2 bg-muted rounded-md">
+                          <p className="text-xs">{data.personalInfo.mblHistory}</p>
+                        </div>
+                      </div>
+                    )}
+                    {data.personalInfo.wasMissionCollector !== undefined && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Coletor da Missão:</span>
+                        <Badge variant={data.personalInfo.wasMissionCollector ? "default" : "secondary"}>
+                          {data.personalInfo.wasMissionCollector ? "Sim" : "Não"}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </CardContent>

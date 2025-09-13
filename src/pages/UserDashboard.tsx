@@ -25,7 +25,18 @@ const UserDashboard = () => {
   }, [navigate]);
 
   const handleRetakeForm = () => {
-    navigate("/form");
+    const user = authService.getCurrentUser();
+    if (user && userProfile) {
+      // Remove the completedAt date but keep the form data and HEXACO responses
+      const updatedProfile = { ...userProfile };
+      delete updatedProfile.completedAt;
+      
+      // Save the updated profile
+      authService.saveUserProfile(user.id, updatedProfile.formData as any);
+      
+      // Navigate to form
+      navigate("/form");
+    }
   };
 
   if (!userProfile || !userProfile.formData) {
@@ -115,6 +126,22 @@ const UserDashboard = () => {
                         <span className="text-sm font-medium">Academia MBL:</span>
                         <Badge variant="outline">
                           {formData.personalInfo.mblAcademyStatus}
+                        </Badge>
+                      </div>
+                    )}
+                    {formData.personalInfo.mblHistory && (
+                      <div className="space-y-1">
+                        <span className="text-sm font-medium">História na militância do MBL:</span>
+                        <div className="p-2 bg-muted rounded-md">
+                          <p className="text-xs">{formData.personalInfo.mblHistory}</p>
+                        </div>
+                      </div>
+                    )}
+                    {formData.personalInfo.wasMissionCollector !== undefined && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Coletor da Missão:</span>
+                        <Badge variant={formData.personalInfo.wasMissionCollector ? "default" : "secondary"}>
+                          {formData.personalInfo.wasMissionCollector ? "Sim" : "Não"}
                         </Badge>
                       </div>
                     )}

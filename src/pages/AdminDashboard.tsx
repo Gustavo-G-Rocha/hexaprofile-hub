@@ -440,8 +440,21 @@ const AdminDashboard = () => {
                                  formData.personalInfo.mblAcademyStatus === "estou-fazendo" ? "Estou fazendo" :
                                  formData.personalInfo.mblAcademyStatus === "ainda-nao-fiz" ? "Ainda não fiz" :
                                  "Não informado"
-                               }
-                             </div>
+                                }
+                              </div>
+                              {formData.personalInfo.mblHistory && (
+                                <div>
+                                  <span className="font-medium">História na militância:</span>
+                                  <p className="text-muted-foreground bg-muted p-2 rounded text-xs mt-1">
+                                    {formData.personalInfo.mblHistory}
+                                  </p>
+                                </div>
+                              )}
+                              {formData.personalInfo.wasMissionCollector !== undefined && (
+                                <div>
+                                  <span className="font-medium">Coletor da Missão:</span> {formData.personalInfo.wasMissionCollector ? "Sim" : "Não"}
+                                </div>
+                              )}
                            </div>
                          </div>
 

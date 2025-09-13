@@ -48,6 +48,7 @@ const FormWizard = () => {
       const profiles = authService.getUserProfiles();
       const userProfile = profiles.find(p => p.id === user.id);
       
+      // Only redirect if form is actually completed (has completedAt date)
       if (userProfile?.formData && userProfile?.completedAt) {
         // User has already completed the form, redirect to dashboard
         navigate("/dashboard");
@@ -55,10 +56,10 @@ const FormWizard = () => {
       }
       
       if (userProfile?.formData) {
-        // Load existing form data
+        // Load existing form data for editing
         setFormData(userProfile.formData);
         
-        // Check if HEXACO is already completed
+        // Check if HEXACO is already completed (block from redoing HEXACO)
         if (userProfile.formData.hexacoResponses && 
             Object.keys(userProfile.formData.hexacoResponses).length >= 24) {
           setHexacoCompleted(true);
@@ -255,6 +256,26 @@ const FormWizard = () => {
   };
 
   const handleFinish = () => {
+    // Mark the form as completed
+    const user = authService.getCurrentUser();
+    if (user) {
+      const profiles = authService.getUserProfiles();
+      const userProfile = profiles.find(p => p.id === user.id);
+      
+      if (userProfile?.formData) {
+        // Mark as completed with current timestamp
+        const completedProfile = {
+          ...userProfile,
+          completedAt: new Date().toISOString()
+        };
+        
+        // Update the profile with completion date
+        localStorage.setItem('userProfiles', JSON.stringify(
+          profiles.map(p => p.id === user.id ? completedProfile : p)
+        ));
+      }
+    }
+    
     navigate("/dashboard");
   };
 
