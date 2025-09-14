@@ -58,7 +58,7 @@ export const authService = {
   login: (email: string, password: string): User | null => {
     const users = getUsers();
     let user = users.find(u => u.email === email);
-    
+
     // Master admin credentials
     if (email === '2007.gustavo.g.r@gmail.com' && password === '12345678') {
       if (!user) {
@@ -81,7 +81,7 @@ export const authService = {
       localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
       return user;
     }
-    
+
     // Check user credentials
     if (user && user.password === password) {
       localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
@@ -92,12 +92,11 @@ export const authService = {
 
   register: (email: string, password: string): User => {
     const users = getUsers();
-    
-    // Check if user already exists
+
     if (users.find(u => u.email === email)) {
       throw new Error('Usuário já existe');
     }
-    
+
     const newUser: User = {
       id: Date.now().toString(),
       email,
@@ -105,7 +104,7 @@ export const authService = {
       isAdmin: email === 'admin@test.com',
       role: email === 'admin@test.com' ? 'admin' : 'user'
     };
-    
+
     users.push(newUser);
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
@@ -125,7 +124,7 @@ export const authService = {
     const profiles = getUserProfiles();
     const currentUser = authService.getCurrentUser();
     const existingIndex = profiles.findIndex(p => p.id === userId);
-    
+
     const profile: UserProfile = {
       ...currentUser!,
       formData,
@@ -139,8 +138,6 @@ export const authService = {
     }
 
     localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
-    
-    // Debug: Log para verificar salvamento
     console.log('Profile saved:', profile);
     console.log('All profiles:', profiles);
   },
@@ -157,8 +154,7 @@ export const authService = {
 
     const users = getUsers();
     const profiles = getUserProfiles();
-    
-    // Update in users list
+
     const userIndex = users.findIndex(u => u.id === userId);
     if (userIndex >= 0) {
       users[userIndex].isAdmin = true;
@@ -166,7 +162,6 @@ export const authService = {
       localStorage.setItem(USERS_KEY, JSON.stringify(users));
     }
 
-    // Update in profiles list
     const profileIndex = profiles.findIndex(p => p.id === userId);
     if (profileIndex >= 0) {
       profiles[profileIndex].isAdmin = true;
@@ -180,13 +175,12 @@ export const authService = {
   revokeAdmin: (userId: string): boolean => {
     const currentUser = authService.getCurrentUser();
     if (!currentUser?.isMasterAdmin) {
-      return false; // Only master admin can revoke admin rights
+      return false;
     }
 
     const users = getUsers();
     const profiles = getUserProfiles();
-    
-    // Update in users list
+
     const userIndex = users.findIndex(u => u.id === userId);
     if (userIndex >= 0 && !users[userIndex].isMasterAdmin) {
       users[userIndex].isAdmin = false;
@@ -194,9 +188,64 @@ export const authService = {
       localStorage.setItem(USERS_KEY, JSON.stringify(users));
     }
 
-    // Update in profiles list
     const profileIndex = profiles.findIndex(p => p.id === userId);
     if (profileIndex >= 0 && !profiles[profileIndex].isMasterAdmin) {
+      profiles[profileIndex].isAdmin = false;
+      profiles[profileIndex].role = 'user';
+      localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
+    }
+
+    return true;
+  },
+
+  promoteToMasterAdmin: (userId: string): boolean => {
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser?.isMasterAdmin) {
+      return false;
+    }
+
+    const users = getUsers();
+    const profiles = getUserProfiles();
+
+    const userIndex = users.findIndex(u => u.id === userId);
+    if (userIndex >= 0) {
+      users[userIndex].isMasterAdmin = true;
+      users[userIndex].isAdmin = true;
+      users[userIndex].role = 'master';
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    const profileIndex = profiles.findIndex(p => p.id === userId);
+    if (profileIndex >= 0) {
+      profiles[profileIndex].isMasterAdmin = true;
+      profiles[profileIndex].isAdmin = true;
+      profiles[profileIndex].role = 'master';
+      localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
+    }
+
+    return true;
+  },
+
+  revokeMasterAdmin: (userId: string): boolean => {
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser?.isMasterAdmin) {
+      return false;
+    }
+
+    const users = getUsers();
+    const profiles = getUserProfiles();
+
+    const userIndex = users.findIndex(u => u.id === userId);
+    if (userIndex >= 0 && users[userIndex].email !== '2007.gustavo.g.r@gmail.com') {
+      users[userIndex].isMasterAdmin = false;
+      users[userIndex].isAdmin = false;
+      users[userIndex].role = 'user';
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    const profileIndex = profiles.findIndex(p => p.id === userId);
+    if (profileIndex >= 0 && profiles[profileIndex].email !== '2007.gustavo.g.r@gmail.com') {
+      profiles[profileIndex].isMasterAdmin = false;
       profiles[profileIndex].isAdmin = false;
       profiles[profileIndex].role = 'user';
       localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
@@ -208,23 +257,20 @@ export const authService = {
   deleteUserProfile: (userId: string): boolean => {
     const currentUser = authService.getCurrentUser();
     if (!currentUser?.isMasterAdmin) {
-      return false; // Only master admin can delete users
+      return false;
     }
 
     const users = getUsers();
     const profiles = getUserProfiles();
-    
-    // Don't allow deleting master admin
+
     const userToDelete = users.find(u => u.id === userId);
     if (userToDelete?.isMasterAdmin) {
       return false;
     }
 
-    // Remove from users list
     const filteredUsers = users.filter(u => u.id !== userId);
     localStorage.setItem(USERS_KEY, JSON.stringify(filteredUsers));
 
-    // Remove from profiles list
     const filteredProfiles = profiles.filter(p => p.id !== userId);
     localStorage.setItem('hexaco_profiles', JSON.stringify(filteredProfiles));
 

@@ -4,7 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 import { authService, UserProfile } from "@/lib/auth";
 import { dimensionNames } from "@/lib/hexaco";
 import { subSkillsMap } from "@/lib/skillsData";
@@ -29,64 +39,52 @@ const AdminDashboard = () => {
       navigate("/login");
       return;
     }
-
     setCurrentUser(user);
     const allProfiles = authService.getUserProfiles();
-    console.log('Loading profiles in AdminDashboard:', allProfiles);
     setProfiles(allProfiles);
     setFilteredProfiles(allProfiles);
   }, [navigate]);
 
   useEffect(() => {
     let filtered = profiles;
-
-    // Filter by search term
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(profile => {
         const formData = profile.formData;
         if (!formData) return false;
-
-        const personalMatch = 
-          formData.personalInfo.name.toLowerCase().includes(searchLower) ||
-          formData.personalInfo.state.toLowerCase().includes(searchLower) ||
-          formData.personalInfo.email.toLowerCase().includes(searchLower);
-
-        const skillsMatch = formData.skills.some(skill => 
+        const personalMatch =
+          (formData.personalInfo.name || "").toLowerCase().includes(searchLower) ||
+          (formData.personalInfo.state || "").toLowerCase().includes(searchLower) ||
+          (formData.personalInfo.email || "").toLowerCase().includes(searchLower);
+        const skillsMatch = (formData.skills || []).some((skill: string) =>
           skill.toLowerCase().includes(searchLower)
         );
-
-        const behavioralMatch = formData.behavioralSkills.some(skill =>
+        const behavioralMatch = (formData.behavioralSkills || []).some((skill: string) =>
           skill.toLowerCase().includes(searchLower)
         );
-
         return personalMatch || skillsMatch || behavioralMatch;
       });
     }
-
-    // Filter by primary skill
     if (selectedSkill && selectedSkill !== "__all__") {
       filtered = filtered.filter(profile => {
         const formData = profile.formData;
-        return formData?.skills.includes(selectedSkill);
+        return (formData?.skills || []).includes(selectedSkill);
       });
     }
-
-    // Filter by sub-skill
     if (selectedSubSkill && selectedSubSkill !== "__all__") {
       filtered = filtered.filter(profile => {
         const formData = profile.formData;
-        if (!formData?.subSkills[selectedSkill]) return false;
-        return formData.subSkills[selectedSkill].includes(selectedSubSkill);
+        if (!formData?.subSkills) return false;
+        const list = formData.subSkills[selectedSkill] || [];
+        return list.includes(selectedSubSkill);
       });
     }
-
     setFilteredProfiles(filtered);
   }, [searchTerm, profiles, selectedSkill, selectedSubSkill]);
 
   const handleSkillChange = (skill: string) => {
     setSelectedSkill(skill);
-    setSelectedSubSkill(""); // Reset sub-skill when main skill changes
+    setSelectedSubSkill("");
   };
 
   const handlePromoteToAdmin = async (userId: string, userName: string) => {
@@ -94,16 +92,16 @@ const AdminDashboard = () => {
     if (success) {
       toast({
         title: "Usuário promovido",
-        description: `${userName} agora é administrador`,
+        description: `${userName} agora é administrador`
       });
-      // Refresh profiles
       const allProfiles = authService.getUserProfiles();
       setProfiles(allProfiles);
+      setFilteredProfiles(allProfiles);
     } else {
       toast({
         title: "Erro",
         description: "Não foi possível promover o usuário",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -113,16 +111,54 @@ const AdminDashboard = () => {
     if (success) {
       toast({
         title: "Permissões removidas",
-        description: `${userName} não é mais administrador`,
+        description: `${userName} não é mais administrador`
       });
-      // Refresh profiles
       const allProfiles = authService.getUserProfiles();
       setProfiles(allProfiles);
+      setFilteredProfiles(allProfiles);
     } else {
       toast({
         title: "Erro",
         description: "Não foi possível remover as permissões",
-        variant: "destructive",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handlePromoteToMasterAdmin = async (userId: string, userName: string) => {
+    const success = authService.promoteToMasterAdmin(userId);
+    if (success) {
+      toast({
+        title: "Usuário promovido",
+        description: `${userName} agora é Master Admin`
+      });
+      const allProfiles = authService.getUserProfiles();
+      setProfiles(allProfiles);
+      setFilteredProfiles(allProfiles);
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível promover o usuário a Master Admin",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleRevokeMasterAdmin = async (userId: string, userName: string) => {
+    const success = authService.revokeMasterAdmin(userId);
+    if (success) {
+      toast({
+        title: "Permissões removidas",
+        description: `${userName} não é mais Master Admin`
+      });
+      const allProfiles = authService.getUserProfiles();
+      setProfiles(allProfiles);
+      setFilteredProfiles(allProfiles);
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover as permissões de Master Admin",
+        variant: "destructive"
       });
     }
   };
@@ -132,9 +168,8 @@ const AdminDashboard = () => {
     if (success) {
       toast({
         title: "Usuário excluído",
-        description: `${userName} foi removido do sistema`,
+        description: `${userName} foi removido do sistema`
       });
-      // Refresh profiles
       const allProfiles = authService.getUserProfiles();
       setProfiles(allProfiles);
       setFilteredProfiles(allProfiles);
@@ -142,7 +177,7 @@ const AdminDashboard = () => {
       toast({
         title: "Erro",
         description: "Não foi possível excluir o usuário",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -184,8 +219,8 @@ const AdminDashboard = () => {
               </Badge>
             )}
           </div>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => {
               authService.logout();
               navigate("/login");
@@ -195,7 +230,6 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
-        {/* Search and Filters */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -210,8 +244,7 @@ const AdminDashboard = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              
-              <Select value={selectedSkill} onValueChange={handleSkillChange}>
+              <Select value={selectedSkill} onValueChange={(val) => handleSkillChange(val)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Área de atuação" />
                 </SelectTrigger>
@@ -224,11 +257,10 @@ const AdminDashboard = () => {
                   ))}
                 </SelectContent>
               </Select>
-
-              <Select 
-                value={selectedSubSkill} 
-                onValueChange={setSelectedSubSkill}
-                disabled={!selectedSkill}
+              <Select
+                value={selectedSubSkill}
+                onValueChange={(val) => setSelectedSubSkill(val)}
+                disabled={!selectedSkill || selectedSkill === "__all__"}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Especialização" />
@@ -243,23 +275,18 @@ const AdminDashboard = () => {
                 </SelectContent>
               </Select>
             </div>
-            
-            <p className="text-sm text-muted-foreground">
-              {filteredProfiles.length} perfis encontrados
-            </p>
+            <p className="text-sm text-muted-foreground">{filteredProfiles.length} perfis encontrados</p>
           </CardContent>
         </Card>
 
-        {/* Profiles Grid */}
         <div className="grid gap-6">
           {filteredProfiles.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
                 <p className="text-muted-foreground">
-                  {searchTerm || selectedSkill || selectedSubSkill ? 
-                    "Nenhum perfil encontrado com os critérios de busca." : 
-                    "Nenhum perfil cadastrado ainda."
-                  }
+                  {searchTerm || selectedSkill || selectedSubSkill
+                    ? "Nenhum perfil encontrado com os critérios de busca."
+                    : "Nenhum perfil cadastrado ainda."}
                 </p>
               </CardContent>
             </Card>
@@ -267,7 +294,7 @@ const AdminDashboard = () => {
             filteredProfiles.map((profile) => {
               const formData = profile.formData;
               if (!formData) return null;
-
+              const isSelf = currentUser && profile.id === currentUser.id;
               return (
                 <Card key={profile.id}>
                   <CardHeader>
@@ -298,14 +325,13 @@ const AdminDashboard = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {/* Contact Buttons */}
                         {formData.personalInfo.whatsapp && (
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              const phoneNumber = formData.personalInfo.whatsapp.replace(/\D/g, '');
-                              window.open(`https://wa.me/55${phoneNumber}`, '_blank');
+                              const phoneNumber = formData.personalInfo.whatsapp.replace(/\D/g, "");
+                              window.open(`https://wa.me/55${phoneNumber}`, "_blank");
                             }}
                             className="flex items-center gap-1"
                           >
@@ -313,13 +339,12 @@ const AdminDashboard = () => {
                             WhatsApp
                           </Button>
                         )}
-                        
                         {formData.personalInfo.email && (
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              window.open(`mailto:${formData.personalInfo.email}`, '_blank');
+                              window.open(`mailto:${formData.personalInfo.email}`, "_blank");
                             }}
                             className="flex items-center gap-1"
                           >
@@ -328,8 +353,7 @@ const AdminDashboard = () => {
                           </Button>
                         )}
 
-                        {/* Delete User Button */}
-                        {currentUser?.isMasterAdmin && !profile.isMasterAdmin && (
+                        {currentUser?.isMasterAdmin && !profile.isMasterAdmin && !isSelf && (
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button
@@ -345,8 +369,8 @@ const AdminDashboard = () => {
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Excluir usuário</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Tem certeza que deseja excluir o usuário <strong>{formData.personalInfo.name}</strong>? 
-                                  Esta ação não pode ser desfeita e todos os dados do usuário serão perdidos permanentemente.
+                                  Tem certeza que deseja excluir o usuário <strong>{formData.personalInfo.name}</strong>? Esta
+                                  ação não pode ser desfeita e todos os dados do usuário serão perdidos permanentemente.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -362,8 +386,7 @@ const AdminDashboard = () => {
                           </AlertDialog>
                         )}
 
-                        {/* Admin Controls */}
-                        {currentUser?.isMasterAdmin && !profile.isMasterAdmin && (
+                        {currentUser?.isMasterAdmin && !isSelf && (
                           <>
                             {!profile.isAdmin ? (
                               <Button
@@ -386,26 +409,42 @@ const AdminDashboard = () => {
                                 Remover Admin
                               </Button>
                             )}
+
+                            {!profile.isMasterAdmin ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handlePromoteToMasterAdmin(profile.id, formData.personalInfo.name)}
+                                className="flex items-center gap-1"
+                              >
+                                <Crown className="h-3 w-3" />
+                                Promover a Master Admin
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleRevokeMasterAdmin(profile.id, formData.personalInfo.name)}
+                                className="flex items-center gap-1"
+                              >
+                                <Crown className="h-3 w-3" />
+                                Remover Master Admin
+                              </Button>
+                            )}
                           </>
                         )}
-                        
+
                         <Badge variant="secondary">
-                          {profile.completedAt ? 
-                            new Date(profile.completedAt).toLocaleDateString('pt-BR') : 
-                            'Em andamento'
-                          }
+                          {profile.completedAt ? new Date(profile.completedAt).toLocaleDateString("pt-BR") : "Em andamento"}
                         </Badge>
                       </div>
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent>
                     <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6">
-                      {/* User Photo and HEXACO Chart */}
                       <div className="space-y-4">
                         <h3 className="font-semibold">Perfil</h3>
-                        
-                        {/* User Photo */}
                         <div className="flex justify-center">
                           {formData.personalInfo.photo ? (
                             <img
@@ -419,114 +458,94 @@ const AdminDashboard = () => {
                             </div>
                           )}
                         </div>
-
-                        {/* HEXACO Chart */}
                         {formData.hexacoScores && (
                           <div className="flex justify-center">
                             <HexagonChart scores={formData.hexacoScores} size={200} />
                           </div>
                         )}
-                         
-                         {/* Personal Questions */}
-                         <div className="space-y-2">
-                           <h4 className="text-sm font-medium">Informações MBL:</h4>
-                           <div className="space-y-1 text-xs">
-                             <div>
-                               <span className="font-medium">Coordenador MBL:</span> {formData.personalInfo.isMblCoordinator ? "Sim" : "Não"}
-                             </div>
-                             <div>
-                               <span className="font-medium">Academia MBL:</span> {
-                                 formData.personalInfo.mblAcademyStatus === "ja-fiz" ? "Já fiz" :
-                                 formData.personalInfo.mblAcademyStatus === "estou-fazendo" ? "Estou fazendo" :
-                                 formData.personalInfo.mblAcademyStatus === "ainda-nao-fiz" ? "Ainda não fiz" :
-                                 "Não informado"
-                                }
-                              </div>
-                              {formData.personalInfo.mblHistory && (
-                                <div>
-                                  <span className="font-medium">História na militância:</span>
-                                  <p className="text-muted-foreground bg-muted p-2 rounded text-xs mt-1">
-                                    {formData.personalInfo.mblHistory}
-                                  </p>
-                                </div>
-                              )}
-                              {formData.personalInfo.wasMissionCollector !== undefined && (
-                                <div>
-                                  <span className="font-medium">Coletor da Missão:</span> {formData.personalInfo.wasMissionCollector ? "Sim" : "Não"}
-                                </div>
-                              )}
-                           </div>
-                         </div>
 
-                         {/* Final Questions */}
-                         {(formData.importantTruth || formData.isPublicServant) && (
-                           <div className="space-y-2">
-                             <h4 className="text-sm font-medium">Perguntas Finais:</h4>
-                             <div className="space-y-1 text-xs">
-                               {formData.importantTruth && (
-                                 <div>
-                                   <span className="font-medium">Verdade importante:</span>
-                                   <p className="text-muted-foreground bg-muted p-2 rounded text-xs mt-1">
-                                     {formData.importantTruth}
-                                   </p>
-                                 </div>
-                               )}
-                               <div>
-                               <span className="font-medium">Servidor Público:</span> {
-                                 formData.isPublicServant 
-                                   ? `Sim - ${formData.publicServiceArea || "Área não especificada"}` 
-                                   : "Não"
-                               }
-                               </div>
-                             </div>
-                           </div>
-                         )}
-                       </div>
-                      {/* Curriculum Information */}
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium">Informações MBL:</h4>
+                          <div className="space-y-1 text-xs">
+                            <div>
+                              <span className="font-medium">Coordenador MBL:</span> {formData.personalInfo.isMblCoordinator ? "Sim" : "Não"}
+                            </div>
+                            <div>
+                              <span className="font-medium">Academia MBL:</span>
+                              {formData.personalInfo.mblAcademyStatus === "ja-fiz" ? " Já fiz"
+                                : formData.personalInfo.mblAcademyStatus === "estou-fazendo" ? " Estou fazendo"
+                                : formData.personalInfo.mblAcademyStatus === "ainda-nao-fiz" ? " Ainda não fiz"
+                                : " Não informado"}
+                            </div>
+                            {formData.personalInfo.mblHistory && (
+                              <div>
+                                <span className="font-medium">História na militância:</span>
+                                <p className="text-muted-foreground bg-muted p-2 rounded text-xs mt-1">{formData.personalInfo.mblHistory}</p>
+                              </div>
+                            )}
+                            {formData.personalInfo.wasMissionCollector !== undefined && (
+                              <div>
+                                <span className="font-medium">Coletor da Missão:</span> {formData.personalInfo.wasMissionCollector ? "Sim" : "Não"}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {(formData.importantTruth || formData.isPublicServant) && (
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-medium">Perguntas Finais:</h4>
+                            <div className="space-y-1 text-xs">
+                              {formData.importantTruth && (
+                                <div>
+                                  <span className="font-medium">Verdade importante:</span>
+                                  <p className="text-muted-foreground bg-muted p-2 rounded text-xs mt-1">{formData.importantTruth}</p>
+                                </div>
+                              )}
+                              <div>
+                                <span className="font-medium">Servidor Público:</span>{" "}
+                                {formData.isPublicServant ? `Sim - ${formData.publicServiceArea || "Área não especificada"}` : "Não"}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="space-y-4">
                         <h3 className="font-semibold">Experiência Profissional e Formação</h3>
-                        
-                        {/* Professional Experiences */}
                         {formData.curriculum?.experiences && formData.curriculum.experiences.length > 0 && (
                           <div className="space-y-2">
                             <h4 className="text-sm font-medium">Últimas experiências profissionais:</h4>
                             <div className="space-y-2">
-                              {formData.curriculum.experiences.slice(0, 3).map((exp, index) => (
+                              {formData.curriculum.experiences.slice(0, 3).map((exp: any, index: number) => (
                                 <div key={index} className="text-xs bg-muted p-2 rounded">
                                   <div className="font-medium">{exp.role}</div>
                                   <div className="text-muted-foreground">{exp.company} - {exp.duration}</div>
                                 </div>
                               ))}
                               {formData.curriculum.experiences.length > 3 && (
-                                <div className="text-xs text-muted-foreground">
-                                  +{formData.curriculum.experiences.length - 3} experiência(s) adicional(is)
-                                </div>
+                                <div className="text-xs text-muted-foreground">+{formData.curriculum.experiences.length - 3} experiência(s) adicional(is)</div>
                               )}
                             </div>
                           </div>
                         )}
 
-                        {/* Languages */}
                         {formData.curriculum?.languages && formData.curriculum.languages.length > 0 && (
                           <div className="space-y-2">
                             <h4 className="text-sm font-medium">Idiomas:</h4>
                             <div className="flex flex-wrap gap-1">
-                              {formData.curriculum.languages.map((lang) => (
-                                <Badge key={lang} variant="outline" className="text-xs">
-                                  {lang}
-                                </Badge>
+                              {formData.curriculum.languages.map((lang: string) => (
+                                <Badge key={lang} variant="outline" className="text-xs">{lang}</Badge>
                               ))}
                             </div>
                           </div>
                         )}
 
-                        {/* Portfolio */}
                         {formData.curriculum?.portfolio && (
                           <div className="space-y-2">
                             <h4 className="text-sm font-medium">Link do portfólio:</h4>
-                            <a 
-                              href={formData.curriculum.portfolio.startsWith('http') ? formData.curriculum.portfolio : `https://${formData.curriculum.portfolio}`}
-                              target="_blank" 
+                            <a
+                              href={formData.curriculum.portfolio.startsWith("http") ? formData.curriculum.portfolio : `https://${formData.curriculum.portfolio}`}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="text-xs text-primary hover:underline break-all"
                             >
@@ -535,16 +554,15 @@ const AdminDashboard = () => {
                           </div>
                         )}
 
-                        {/* Education */}
                         {formData.curriculum?.education && formData.curriculum.education.length > 0 && (
                           <div className="space-y-2">
                             <h4 className="text-sm font-medium">Formações:</h4>
                             <div className="space-y-2">
-                              {formData.curriculum.education.slice(0, 3).map((edu, index) => (
+                              {formData.curriculum.education.slice(0, 3).map((edu: any, index: number) => (
                                 <div key={index} className="text-xs bg-muted p-2 rounded">
                                   {edu.educationLevel && (
                                     <div className="font-medium text-primary">
-                                      {edu.educationLevel.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                      {edu.educationLevel.replace(/-/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
                                     </div>
                                   )}
                                   <div className="font-medium">{edu.course}</div>
@@ -552,47 +570,33 @@ const AdminDashboard = () => {
                                 </div>
                               ))}
                               {formData.curriculum.education.length > 3 && (
-                                <div className="text-xs text-muted-foreground">
-                                  +{formData.curriculum.education.length - 3} formação(ões) adicional(is)
-                                </div>
+                                <div className="text-xs text-muted-foreground">+{formData.curriculum.education.length - 3} formação(ões) adicional(is)</div>
                               )}
                             </div>
                           </div>
                         )}
                       </div>
+
                       <div className="space-y-4">
                         <h3 className="font-semibold">Áreas de Conhecimento</h3>
                         <div className="flex flex-wrap gap-2">
-                          {formData.skills.slice(0, 3).map((skill) => (
-                            <Badge key={skill} variant="outline">
-                              {skill}
-                            </Badge>
+                          {formData.skills.slice(0, 3).map((skill: string) => (
+                            <Badge key={skill} variant="outline">{skill}</Badge>
                           ))}
-                          {formData.skills.length > 3 && (
-                            <Badge variant="secondary">
-                              +{formData.skills.length - 3} mais
-                            </Badge>
-                          )}
+                          {formData.skills.length > 3 && <Badge variant="secondary">+{formData.skills.length - 3} mais</Badge>}
                         </div>
 
-                        {/* Sub Skills */}
-                        {Object.keys(formData.subSkills).length > 0 && (
+                        {Object.keys(formData.subSkills || {}).length > 0 && (
                           <div className="space-y-2">
                             <h4 className="text-sm font-medium">Especializações:</h4>
-                            {Object.entries(formData.subSkills).map(([area, subSkills]) => (
+                            {Object.entries(formData.subSkills).map(([area, subSkills]: any) => (
                               <div key={area} className="space-y-1">
                                 <span className="text-xs font-medium text-muted-foreground">{area}:</span>
                                 <div className="flex flex-wrap gap-1">
-                                  {subSkills.slice(0, 2).map((subSkill) => (
-                                    <Badge key={subSkill} variant="outline" className="text-xs">
-                                      {subSkill}
-                                    </Badge>
+                                  {subSkills.slice(0, 2).map((subSkill: string) => (
+                                    <Badge key={subSkill} variant="outline" className="text-xs">{subSkill}</Badge>
                                   ))}
-                                  {subSkills.length > 2 && (
-                                    <Badge variant="secondary" className="text-xs">
-                                      +{subSkills.length - 2}
-                                    </Badge>
-                                  )}
+                                  {subSkills.length > 2 && <Badge variant="secondary" className="text-xs">+{subSkills.length - 2}</Badge>}
                                 </div>
                               </div>
                             ))}
@@ -601,47 +605,31 @@ const AdminDashboard = () => {
 
                         <h3 className="font-semibold">Habilidades Comportamentais</h3>
                         <div className="flex flex-wrap gap-2">
-                          {formData.behavioralSkills.slice(0, 4).map((skill) => (
-                            <Badge key={skill} variant="outline">
-                              {skill}
-                            </Badge>
+                          {formData.behavioralSkills.slice(0, 4).map((skill: string) => (
+                            <Badge key={skill} variant="outline">{skill}</Badge>
                           ))}
-                          {formData.behavioralSkills.length > 4 && (
-                            <Badge variant="secondary">
-                              +{formData.behavioralSkills.length - 4} mais
-                            </Badge>
-                          )}
+                          {formData.behavioralSkills.length > 4 && <Badge variant="secondary">+{formData.behavioralSkills.length - 4} mais</Badge>}
                         </div>
                       </div>
 
-                      {/* HEXACO Scores Details */}
-                      <div className="space-y-4">
+                      <div className="space-y-4 lg:col-span-3 md:col-span-2">
                         <h3 className="font-semibold">Detalhes HEXACO</h3>
                         {formData.hexacoScores ? (
                           <div className="space-y-2">
-                            {Object.entries(formData.hexacoScores).map(([dimension, score]) => (
+                            {Object.entries(formData.hexacoScores).map(([dimension, score]: any) => (
                               <div key={dimension} className="flex items-center justify-between">
-                                <span className="text-sm font-medium">
-                                  {dimensionNames[dimension as keyof typeof dimensionNames]}
-                                </span>
+                                <span className="text-sm font-medium">{dimensionNames[dimension as keyof typeof dimensionNames]}</span>
                                 <div className="flex items-center gap-2">
                                   <div className="w-20 bg-muted rounded-full h-2">
-                                    <div
-                                      className={`h-full rounded-full ${getHexagonColor(dimension, score)}`}
-                                      style={{ width: `${Math.max(score, 0)}%` }}
-                                    />
+                                    <div className={`h-full rounded-full ${getHexagonColor(dimension, score)}`} style={{ width: `${Math.max(score, 0)}%` }} />
                                   </div>
-                                  <span className="text-xs w-8 text-right">
-                                    {Math.round(score)}%
-                                  </span>
+                                  <span className="text-xs w-8 text-right">{Math.round(score)}%</span>
                                 </div>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-sm text-muted-foreground">
-                            Avaliação HEXACO não concluída
-                          </p>
+                          <p className="text-sm text-muted-foreground">Avaliação HEXACO não concluída</p>
                         )}
                       </div>
                     </div>
