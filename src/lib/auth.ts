@@ -5,7 +5,8 @@ export interface User {
   name?: string;
   isAdmin?: boolean;
   isMasterAdmin?: boolean;
-  role?: 'user' | 'admin' | 'master';
+  isCoordinator?: boolean;
+  role?: 'user' | 'admin' | 'master' | 'coordinator';
   password?: string;
 }
 
@@ -49,6 +50,7 @@ export interface FormData {
 export interface UserProfile extends User {
   formData?: FormData;
   completedAt?: string;
+  coordinatorVerified?: boolean;
 }
 
 const USERS_KEY = 'hexaco_users';
@@ -59,7 +61,6 @@ export const authService = {
     const users = getUsers();
     let user = users.find(u => u.email === email);
 
-    // Master admin credentials
     if (email === '2007.gustavo.g.r@gmail.com' && password === '12345678') {
       if (!user) {
         user = {
@@ -82,7 +83,6 @@ export const authService = {
       return user;
     }
 
-    // Check user credentials
     if (user && user.password === password) {
       localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
       return user;
@@ -128,7 +128,9 @@ export const authService = {
     const profile: UserProfile = {
       ...currentUser!,
       formData,
-      completedAt: new Date().toISOString()
+      completedAt: new Date().toISOString(),
+      isCoordinator: formData.personalInfo.isMblCoordinator || false,
+      role: formData.personalInfo.isMblCoordinator ? 'coordinator' : currentUser?.role
     };
 
     if (existingIndex >= 0) {
@@ -138,8 +140,6 @@ export const authService = {
     }
 
     localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
-    console.log('Profile saved:', profile);
-    console.log('All profiles:', profiles);
   },
 
   getUserProfiles: (): UserProfile[] => {
@@ -277,15 +277,36 @@ export const authService = {
     return true;
   },
 
-  clearCompletion: (userId: string): void => {
+    clearCompletion: (userId: string): void => {
     const profiles = getUserProfiles();
     const index = profiles.findIndex(p => p.id === userId);
     if (index >= 0) {
       delete (profiles[index] as any).completedAt;
       localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
     }
+  },
+
+  toggleCoordinatorVerified: (userId: string): boolean => {
+  const currentUser = authService.getCurrentUser();
+  if (!currentUser?.isAdmin && !currentUser?.isMasterAdmin) {
+    return false;
   }
+
+  const profiles = getUserProfiles();
+  const index = profiles.findIndex(p => p.id === userId);
+  if (index >= 0) {
+    const profile = profiles[index];
+    // NÃO mexe mais no formData, apenas no flag coordinatorVerified
+    profile.coordinatorVerified = !profile.coordinatorVerified;
+    profiles[index] = profile;
+    localStorage.setItem('hexaco_profiles', JSON.stringify(profiles));
+    return true;
+  }
+  return false;
+}
+
 };
+
 
 function getUsers(): User[] {
   const users = localStorage.getItem(USERS_KEY);

@@ -19,7 +19,7 @@ import { authService, UserProfile } from "@/lib/auth";
 import { dimensionNames } from "@/lib/hexaco";
 import { subSkillsMap } from "@/lib/skillsData";
 import { useNavigate } from "react-router-dom";
-import { Search, User, MapPin, Briefcase, Shield, ShieldCheck, Crown, MessageCircle, Mail, Trash2 } from "lucide-react";
+import { Search, User, MapPin, Briefcase, Shield, ShieldCheck, Crown, MessageCircle, Mail, Trash2, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import HexagonChart from "@/components/HexagonChart";
 
@@ -163,6 +163,25 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleToggleCoordinatorVerified = async (userId: string, userName: string) => {
+    const success = authService.toggleCoordinatorVerified(userId);
+    if (success) {
+      toast({
+        title: "Coordenador verificado",
+        description: `${userName} agora tem o selo de verificado`
+      });
+      const allProfiles = authService.getUserProfiles();
+      setProfiles(allProfiles);
+      setFilteredProfiles(allProfiles);
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o status de coordenador verificado",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleDeleteUser = async (userId: string, userName: string) => {
     const success = authService.deleteUserProfile(userId);
     if (success) {
@@ -197,6 +216,7 @@ const AdminDashboard = () => {
   const getUserRoleIcon = (profile: UserProfile) => {
     if (profile.isMasterAdmin) return <Crown className="h-4 w-4 text-yellow-600" />;
     if (profile.isAdmin) return <ShieldCheck className="h-4 w-4 text-blue-600" />;
+    if (profile.coordinatorVerified) return <CheckCircle className="h-4 w-4 text-green-600" />;
     return <User className="h-4 w-4 text-gray-600" />;
   };
 
@@ -306,7 +326,10 @@ const AdminDashboard = () => {
                           <Badge variant="secondary" className="text-xs">
                             {getUserRoleText(profile)}
                           </Badge>
+                          
+
                         </CardTitle>
+
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <MapPin className="h-4 w-4" />
@@ -350,6 +373,18 @@ const AdminDashboard = () => {
                           >
                             <Mail className="h-3 w-3" />
                             Email
+                          </Button>
+                        )}
+
+                        {(currentUser?.isAdmin || currentUser?.isMasterAdmin) && !isSelf && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleToggleCoordinatorVerified(profile.id, formData.personalInfo.name)}
+                            className="flex items-center gap-1"
+                          >
+                            <CheckCircle className="h-3 w-3" />
+                            {profile.coordinatorVerified ? "Remover selo" : "Coordenador Verificado"}
                           </Button>
                         )}
 
