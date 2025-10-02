@@ -231,7 +231,7 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold">MPHC - Painel Administrativo</h1>
+            <h1 className="text-3xl font-bold">Mutuals - Painel Administrativo</h1>
             {currentUser?.isMasterAdmin && (
               <Badge variant="outline" className="flex items-center gap-1">
                 <Crown className="h-3 w-3" />
