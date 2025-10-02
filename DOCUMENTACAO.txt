@@ -1,12 +1,13 @@
 ===========================================
-SISTEMA DE AVALIAÇÃO HEXACO - DOCUMENTAÇÃO
+MUTUALS - SISTEMA DE AVALIAÇÃO DE PERFIS
 ===========================================
 
 VISÃO GERAL
 -----------
-Este é um sistema web para avaliação de personalidade baseado no modelo HEXACO, 
-que permite aos usuários completarem uma avaliação psicológica completa e 
-aos administradores gerenciarem usuários e visualizarem resultados.
+Mutuals é um sistema web para avaliação de perfis baseado no modelo HEXACO de 
+personalidade, que permite aos usuários completarem uma avaliação completa de 
+personalidade e habilidades, e aos administradores gerenciarem usuários e 
+visualizarem resultados detalhados.
 
 MODELO HEXACO
 -------------
@@ -23,52 +24,95 @@ FUNCIONALIDADES PRINCIPAIS
 
 1. SISTEMA DE AUTENTICAÇÃO
    - Cadastro e login de usuários
-   - Diferentes níveis de acesso (usuário, admin, master admin)
-   - Armazenamento local dos dados de usuário
+   - Diferentes níveis de acesso:
+     * Usuário: Acesso ao próprio perfil
+     * Coordenador Verificado: Usuário com selo de verificação
+     * Admin: Acesso ao painel administrativo
+     * Master Admin: Acesso total incluindo exclusão de usuários
+   - Armazenamento local dos dados (com suporte para migração futura ao banco)
 
 2. FORMULÁRIO MULTI-ETAPAS
-   - Etapa 1: Informações Pessoais (nome, email, telefone, estado, foto)
-   - Etapa 2: Áreas de Conhecimento (seleção de habilidades técnicas)
-   - Etapa 3: Habilidades Específicas (sub-habilidades por área)
-   - Etapa 4: Habilidades Comportamentais
-   - Etapa 5: Avaliação HEXACO (24 questões)
-   - Etapa 6: Currículo (experiências, idiomas, educação)
-   - Etapa 7: Resultados (gráfico hexagonal dos scores HEXACO)
+   - Etapa 1: Informações Pessoais
+     * Nome completo
+     * Email
+     * WhatsApp
+     * Estado e cidade
+   
+   - Etapa 2: Currículo e Militância
+     * Está na militância? (Sim/Não)
+     * História na militância (campo de texto)
+     * Foi coletor da Missão MBL? (Sim/Não)
+   
+   - Etapa 3: Áreas de Conhecimento
+     * Seleção de habilidades técnicas principais
+   
+   - Etapa 4: Habilidades Específicas
+     * Sub-habilidades por área selecionada
+   
+   - Etapa 5: Habilidades Comportamentais
+     * Soft skills e competências comportamentais
+   
+   - Etapa 6: Avaliação HEXACO
+     * 24 questões para avaliar personalidade
+     * Escala de 1 (Discordo totalmente) a 5 (Concordo totalmente)
+   
+   - Etapa 7: Resultados
+     * Gráfico hexagonal dos scores HEXACO
+     * Resumo completo do perfil
+     * Exibição das informações de militância
 
-3. PAINEL ADMINISTRATIVO
+3. DASHBOARD DO USUÁRIO
+   - Visualização do próprio perfil completo
+   - Gráfico HEXACO personalizado
+   - Informações pessoais, habilidades e competências
+   - Dados sobre militância e Missão MBL
+   - Botão para refazer avaliação (exceto teste HEXACO)
+   - Selo de "Coordenador Verificado" se aplicável
+
+4. PAINEL ADMINISTRATIVO
    - Visualização de todos os usuários cadastrados
-   - Promoção/revogação de privilégios administrativos
-   - Exclusão de usuários (apenas master admin)
-   - Visualização de perfis completos com gráficos HEXACO
-   - Fotos dos usuários
+   - Sistema de busca e filtros:
+     * Busca por nome, cidade, email
+     * Filtro por área de atuação
+     * Filtro por especialização
+   - Gerenciamento de usuários:
+     * Visualização de perfis completos com gráficos HEXACO
+     * Informações de militância de cada usuário
+     * Contato direto via WhatsApp e Email
+     * Promoção/revogação de privilégios administrativos
+     * Concessão/remoção de selo "Coordenador Verificado"
+     * Exclusão de usuários (apenas master admin)
+   - Indicadores visuais de nível de acesso (ícones e badges)
 
 ESTRUTURA DE ARQUIVOS
 --------------------
 
 src/
 ├── components/
-│   ├── ui/                    # Componentes base (shadcn/ui)
-│   ├── form/                  # Componentes do formulário
-│   │   ├── PersonalInfoStep.tsx      # Etapa 1 - Dados pessoais
-│   │   ├── SkillsStep.tsx           # Etapa 2 - Áreas conhecimento
-│   │   ├── SubSkillsStep.tsx        # Etapa 3 - Habilidades específicas
-│   │   ├── BehavioralSkillsStep.tsx # Etapa 4 - Habilidades comportamentais
-│   │   ├── HexacoStep.tsx           # Etapa 5 - Avaliação HEXACO
-│   │   ├── CurriculumStep.tsx       # Etapa 6 - Currículo
+│   ├── ui/                          # Componentes base (shadcn/ui)
+│   ├── form/                        # Componentes do formulário
+│   │   ├── PersonalInfoStep.tsx     # Etapa 1 - Dados pessoais
+│   │   ├── CurriculumStep.tsx       # Etapa 2 - Militância e MBL
+│   │   ├── SkillsStep.tsx           # Etapa 3 - Áreas conhecimento
+│   │   ├── SubSkillsStep.tsx        # Etapa 4 - Habilidades específicas
+│   │   ├── BehavioralSkillsStep.tsx # Etapa 5 - Habilidades comportamentais
+│   │   ├── HexacoStep.tsx           # Etapa 6 - Avaliação HEXACO
 │   │   └── ResultsStep.tsx          # Etapa 7 - Resultados
-│   └── HexagonChart.tsx       # Gráfico hexagonal dos resultados
+│   └── HexagonChart.tsx             # Gráfico hexagonal dos resultados
 ├── pages/
-│   ├── Index.tsx              # Página inicial
-│   ├── Login.tsx              # Login e cadastro
-│   ├── FormWizard.tsx         # Formulário principal
-│   ├── UserDashboard.tsx      # Dashboard do usuário
-│   └── AdminDashboard.tsx     # Dashboard administrativo
+│   ├── Index.tsx                    # Página inicial
+│   ├── Login.tsx                    # Login e cadastro
+│   ├── FormWizard.tsx               # Formulário principal
+│   ├── UserDashboard.tsx            # Dashboard do usuário
+│   └── AdminDashboard.tsx           # Dashboard administrativo
 ├── lib/
-│   ├── auth.ts                # Sistema de autenticação
-│   ├── hexaco.ts              # Lógica de cálculo HEXACO
-│   ├── skillsData.ts          # Dados das habilidades
-│   └── utils.ts               # Utilitários gerais
-└── hooks/                     # Hooks personalizados
+│   ├── auth.ts                      # Sistema de autenticação e gestão de perfis
+│   ├── hexaco.ts                    # Lógica de cálculo HEXACO
+│   ├── skillsData.ts                # Dados das habilidades e especializações
+│   └── utils.ts                     # Utilitários gerais
+└── hooks/                           # Hooks personalizados
+
+database-schema.sql                  # Schema completo para Neon DB
 
 FLUXO DE USUÁRIO
 ---------------
@@ -77,10 +121,16 @@ FLUXO DE USUÁRIO
    Acesso inicial → Cadastro → Login → Formulário (7 etapas) → Dashboard
 
 2. USUÁRIO EXISTENTE:
-   Login → Dashboard (pode refazer formulário, exceto HEXACO)
+   Login → Dashboard → Opção de refazer formulário (mantém HEXACO original)
 
-3. ADMINISTRADOR:
-   Login → Painel Admin → Gerenciamento de usuários
+3. REFAZER AVALIAÇÃO:
+   - Usuário pode atualizar todos os dados
+   - Teste HEXACO é automaticamente pulado
+   - Mantém scores HEXACO originais
+   - Dados anteriores são pré-carregados no formulário
+
+4. ADMINISTRADOR:
+   Login → Painel Admin → Busca/Filtros → Gerenciamento de usuários
 
 REGRAS DE NEGÓCIO
 -----------------
@@ -88,33 +138,71 @@ REGRAS DE NEGÓCIO
 1. HEXACO ÚNICO:
    - Cada usuário só pode fazer o teste HEXACO uma vez
    - Em tentativas posteriores, a etapa é automaticamente pulada
-   - Mantém os resultados originais
+   - Mantém os resultados originais para consistência
 
 2. NÍVEIS DE ACESSO:
    - Usuário: Acessa apenas próprio formulário e dashboard
-   - Admin: Visualiza todos usuários, pode promover outros
-   - Master Admin: Todas permissões + excluir usuários
+   - Coordenador Verificado: Usuário comum com selo de verificação
+   - Admin: Visualiza todos usuários, pode promover outros e gerenciar selos
+   - Master Admin: Todas permissões + excluir usuários + promover admins
 
 3. VALIDAÇÕES:
-   - Campos obrigatórios em cada etapa
+   - Campos obrigatórios em cada etapa:
+     * Informações pessoais: nome, email, WhatsApp, estado, cidade
+     * Militância: campos condicionais baseados em respostas
+     * Pelo menos uma seleção em listas de habilidades
+     * Todas as 24 perguntas HEXACO obrigatórias
    - Email válido e confirmação
-   - Pelo menos uma seleção em listas obrigatórias
-   - Todas as 24 perguntas HEXACO devem ser respondidas
+   - Formato de WhatsApp brasileiro
 
 4. RELACIONAMENTO DE DADOS:
-   - Ao desmarcar área de conhecimento, habilidades específicas são removidas
-   - Dados persistidos no localStorage do navegador
+   - Ao desmarcar área de conhecimento, sub-habilidades relacionadas são removidas
+   - Dados de militância exibidos em dashboard e painel admin
+   - Perfis podem ser atualizados mantendo integridade dos dados
+
+5. COORDENADOR VERIFICADO:
+   - Selo especial atribuído por admins
+   - Visível em todos os painéis
+   - Diferencia coordenadores confiáveis
+
+BANCO DE DADOS
+--------------
+
+O sistema inclui um schema SQL completo (database-schema.sql) pronto para:
+- PostgreSQL / Neon DB
+- Estrutura completa de tabelas:
+  * users: Dados de autenticação
+  * user_roles: Gerenciamento de permissões
+  * profiles: Perfis dos usuários
+  * personal_info: Informações pessoais
+  * curriculum_info: Dados de militância e MBL
+  * skills: Habilidades técnicas
+  * sub_skills: Especializações
+  * behavioral_skills: Competências comportamentais
+  * hexaco_scores: Resultados do teste de personalidade
+
+- Funções de segurança implementadas
+- Índices para performance otimizada
+- Triggers para auditoria automática
+- Comentários e documentação inline
+
+MIGRAÇÃO DE DADOS:
+- Sistema atual usa localStorage
+- Schema preparado para migração futura
+- Estrutura mantém compatibilidade com dados atuais
 
 TECNOLOGIAS UTILIZADAS
 ---------------------
 - React 18 + TypeScript
-- Vite (bundler)
-- Tailwind CSS (estilização)
-- Shadcn/ui (componentes)
-- React Router (roteamento)
-- React Hook Form (formulários)
-- Recharts (gráficos)
-- Local Storage (persistência)
+- Vite (bundler e dev server)
+- Tailwind CSS (estilização com design system)
+- Shadcn/ui (componentes acessíveis e customizáveis)
+- React Router (roteamento client-side)
+- React Hook Form (gerenciamento de formulários)
+- Recharts (gráficos e visualizações)
+- Lucide React (ícones)
+- Local Storage (persistência atual)
+- PostgreSQL / Neon DB (banco de dados preparado)
 
 COMO USAR O SISTEMA
 ------------------
@@ -126,48 +214,122 @@ COMO USAR O SISTEMA
    - Complete o formulário de 7 etapas
    - Visualize seus resultados no dashboard
 
-2. ADMINISTRAÇÃO:
-   - Login master admin: 2007.gustavo.g.r@gmail.com / 12345678
+2. ATUALIZAR PERFIL:
+   - Login com suas credenciais
+   - No dashboard, clique em "Refazer avaliação"
+   - Dados anteriores são pré-carregados
+   - Atualize o que desejar
+   - Teste HEXACO é mantido automaticamente
+
+3. ADMINISTRAÇÃO:
+   - Login com conta admin ou master admin
    - Acesse painel administrativo
-   - Gerencie usuários e visualize perfis
+   - Use busca e filtros para encontrar perfis
+   - Gerencie usuários: promova, verifique ou remova
+   - Entre em contato via WhatsApp ou Email
+
+CREDENCIAIS PADRÃO
+------------------
+Master Admin: 2007.gustavo.g.r@gmail.com / 12345678
+(Altere após primeiro acesso em produção)
 
 OBSERVAÇÕES IMPORTANTES
 ----------------------
 
-1. DADOS LOCAIS:
-   - Todos os dados são armazenados no localStorage
-   - Limpar dados do navegador apaga todas informações
-   - Não há sincronização entre dispositivos
+1. DADOS E PERSISTÊNCIA:
+   - Atualmente: dados no localStorage do navegador
+   - Futuro: migração para PostgreSQL/Neon DB
+   - Schema SQL completo já disponível
+   - Limpar dados do navegador apaga informações locais
 
 2. SEGURANÇA:
-   - Sistema básico de autenticação para demonstração
-   - Não adequado para produção sem implementar backend real
-   - Senhas armazenadas em texto plano no localStorage
+   - Sistema de autenticação para demonstração
+   - Para produção: implementar backend com:
+     * Hash de senhas (bcrypt)
+     * Tokens JWT
+     * HTTPS obrigatório
+     * Validações server-side
+   - Schema SQL preparado com RLS e funções seguras
 
 3. RESPONSIVIDADE:
-   - Interface adaptada para desktop e mobile
+   - Interface 100% adaptada para desktop e mobile
    - Componentes responsivos com Tailwind CSS
+   - Gráficos ajustáveis a diferentes tamanhos de tela
 
-4. EXTENSIBILIDADE:
-   - Estrutura modular permite fácil adição de novas funcionalidades
-   - Componentes reutilizáveis com shadcn/ui
-   - Sistema de tipos TypeScript para maior segurança
+4. DESIGN SYSTEM:
+   - Cores e estilos centralizados em index.css
+   - Tokens semânticos do Tailwind
+   - Modo claro/escuro suportado
+   - Componentes consistentes
+
+5. EXTENSIBILIDADE:
+   - Estrutura modular e escalável
+   - Componentes reutilizáveis
+   - TypeScript para type safety
+   - Fácil adição de novas funcionalidades
 
 MANUTENÇÃO E DESENVOLVIMENTO
 ---------------------------
 
-Para adicionar novas funcionalidades:
+ADICIONAR NOVAS FUNCIONALIDADES:
 1. Criar componentes na pasta apropriada
 2. Atualizar tipos em lib/auth.ts se necessário
 3. Implementar validações no FormWizard.tsx
-4. Atualizar dashboard correspondente
+4. Atualizar dashboards correspondentes
+5. Adicionar ao schema SQL se envolver persistência
 
-Para modificar avaliação HEXACO:
+MODIFICAR AVALIAÇÃO HEXACO:
 1. Editar perguntas em lib/hexaco.ts
 2. Ajustar lógica de cálculo se necessário
 3. Validar no HexacoStep.tsx
+4. Testar resultados no HexagonChart
 
-Para adicionar novos tipos de usuário:
-1. Estender interface User em auth.ts
-2. Implementar lógica de autorização
-3. Criar rotas/componentes específicos
+ADICIONAR NOVOS NÍVEIS DE ACESSO:
+1. Estender enum app_role no schema SQL
+2. Atualizar interface User em auth.ts
+3. Implementar lógica de autorização
+4. Criar rotas/componentes específicos
+
+CONECTAR AO BANCO DE DADOS:
+1. Executar database-schema.sql no Neon DB
+2. Instalar cliente PostgreSQL (pg)
+3. Configurar variáveis de ambiente
+4. Implementar API endpoints
+5. Migrar lógica de auth.ts para backend
+6. Atualizar componentes para consumir API
+
+MODIFICAR HABILIDADES:
+1. Editar skillsData.ts
+2. Adicionar novas áreas e sub-habilidades
+3. Componentes ajustam-se automaticamente
+
+ROADMAP FUTURO
+--------------
+- [ ] Integração com banco de dados PostgreSQL/Neon
+- [ ] API REST para operações de backend
+- [ ] Sistema de autenticação com JWT
+- [ ] Upload de fotos de perfil
+- [ ] Exportação de relatórios em PDF
+- [ ] Dashboard com analytics e estatísticas
+- [ ] Sistema de notificações
+- [ ] Histórico de alterações de perfil
+- [ ] Busca avançada com mais filtros
+- [ ] Sistema de tags e categorização
+- [ ] Integração com outras plataformas
+
+SUPORTE E CONTATO
+-----------------
+Para dúvidas, sugestões ou suporte:
+- Documentação: Consulte este arquivo
+- Código: Bem comentado e estruturado
+- Issues: Use o sistema de controle de versão
+
+LICENÇA
+-------
+[Definir licença apropriada]
+
+ÚLTIMA ATUALIZAÇÃO
+------------------
+Versão: 2.0
+Data: Outubro 2025
+Sistema: Mutuals - Avaliação de Perfis e Personalidade
