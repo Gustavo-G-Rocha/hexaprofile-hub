@@ -22,14 +22,14 @@ const Index = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-lg text-center">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold">HEXACO Profile</CardTitle>
+          <CardTitle className="text-3xl font-bold">Mutuals</CardTitle>
           <CardDescription className="text-lg">
             Sistema de Avaliação de Personalidade Profissional
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">
-            Descubra seu perfil de personalidade através do modelo HEXACO e complete 
+            Descubra seu perfil de personalidade e complete 
             sua avaliação profissional completa.
           </p>
           <div className="space-y-3">

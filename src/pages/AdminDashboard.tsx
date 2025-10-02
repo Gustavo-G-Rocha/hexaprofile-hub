@@ -648,7 +648,7 @@ const AdminDashboard = () => {
                       </div>
 
                       <div className="space-y-4 lg:col-span-3 md:col-span-2">
-                        <h3 className="font-semibold">Detalhes HEXACO</h3>
+                        <h3 className="font-semibold">Detalhes de Personalidade</h3>
                         {formData.hexacoScores ? (
                           <div className="space-y-2">
                             {Object.entries(formData.hexacoScores).map(([dimension, score]: any) => (
@@ -664,7 +664,7 @@ const AdminDashboard = () => {
                             ))}
                           </div>
                         ) : (
-                          <p className="text-sm text-muted-foreground">Avaliação HEXACO não concluída</p>
+                          <p className="text-sm text-muted-foreground">Avaliação de personalidade não concluída</p>
                         )}
                       </div>
                     </div>

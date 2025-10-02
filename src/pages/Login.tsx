@@ -21,7 +21,7 @@ const Login = () => {
     if (user) {
       toast({
         title: "Login realizado com sucesso!",
-        description: "Bem-vindo ao sistema HEXACO."
+        description: "Bem-vindo ao Mutuals."
       });
       
       if (user.isAdmin) {
@@ -65,7 +65,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">HEXACO Profile</CardTitle>
+          <CardTitle className="text-2xl font-bold">Mutuals</CardTitle>
           <CardDescription>
             Sistema de Avaliação de Personalidade
           </CardDescription>

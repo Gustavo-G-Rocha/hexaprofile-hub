@@ -15,7 +15,7 @@ const ResultsStep = ({ data }: ResultsStepProps) => {
     return (
       <div className="text-center py-8">
         <p className="text-muted-foreground">
-          Calculando seus resultados HEXACO...
+          Calculando seus resultados...
         </p>
       </div>
     );
@@ -27,7 +27,7 @@ const ResultsStep = ({ data }: ResultsStepProps) => {
         <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
         <h2 className="text-2xl font-bold mb-2">Avaliação Concluída!</h2>
         <p className="text-muted-foreground">
-          Aqui está o seu perfil HEXACO completo
+          Aqui está o seu perfil completo
         </p>
       </div>
 
@@ -99,17 +99,17 @@ const ResultsStep = ({ data }: ResultsStepProps) => {
         </CardContent>
       </Card>
 
-      {/* HEXACO Chart */}
+      {/* Personality Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Seu Perfil HEXACO</CardTitle>
+          <CardTitle>Seu Perfil de Personalidade</CardTitle>
         </CardHeader>
         <CardContent>
           <HexagonChart scores={data.hexacoScores} />
         </CardContent>
       </Card>
 
-      {/* HEXACO Detailed Scores */}
+      {/* Detailed Scores */}
       <Card>
         <CardHeader>
           <CardTitle>Pontuações Detalhadas</CardTitle>

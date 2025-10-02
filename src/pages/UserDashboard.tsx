@@ -41,7 +41,7 @@ const UserDashboard = () => {
             <CardContent className="p-8 text-center">
               <h2 className="text-2xl font-bold mb-4">Bem-vindo!</h2>
               <p className="text-muted-foreground mb-6">
-                Você ainda não completou sua avaliação HEXACO.
+                Você ainda não completou sua avaliação.
               </p>
               <Button onClick={() => navigate("/form")}>
                 Iniciar Avaliação
@@ -59,7 +59,7 @@ const UserDashboard = () => {
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Seu Perfil HEXACO</h1>
+          <h1 className="text-3xl font-bold">Seu Perfil</h1>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleRetakeForm}>
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -162,7 +162,7 @@ const UserDashboard = () => {
           {/* HEXACO Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>Seu HEXACO</CardTitle>
+              <CardTitle>Seu Perfil de Personalidade</CardTitle>
             </CardHeader>
             <CardContent>
               {formData.hexacoScores ? (
@@ -178,7 +178,7 @@ const UserDashboard = () => {
         {formData.hexacoScores && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Dimensões HEXACO Detalhadas</CardTitle>
+              <CardTitle>Dimensões de Personalidade Detalhadas</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -299,7 +299,7 @@ const FormWizard = () => {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center mb-4">
-              <CardTitle>Avaliação HEXACO - {steps[currentStep].title}</CardTitle>
+              <CardTitle>Mutuals - {steps[currentStep].title}</CardTitle>
               <Button 
                 variant="outline" 
                 onClick={() => {
