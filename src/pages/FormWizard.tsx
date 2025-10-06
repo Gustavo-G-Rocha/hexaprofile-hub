@@ -70,10 +70,10 @@ const FormWizard = () => {
 
   const steps = [
     { title: "Informações Pessoais", component: PersonalInfoStep },
+    { title: "Avaliação HEXACO", component: HexacoStep },
     { title: "Áreas de Conhecimento", component: SkillsStep },
     { title: "Habilidades Específicas", component: SubSkillsStep },
     { title: "Habilidades Comportamentais", component: BehavioralSkillsStep },
-    { title: "Avaliação HEXACO", component: HexacoStep },
     { title: "Currículo", component: CurriculumStep },
     { title: "Resultados", component: ResultsStep }
   ];
@@ -100,7 +100,19 @@ const FormWizard = () => {
         }
         return true;
       
-      case 1: // Skills
+      case 1: // HEXACO
+        const responses = formData.hexacoResponses || {};
+        if (Object.keys(responses).length < 24) {
+          toast({
+            title: "Avaliação incompleta",
+            description: "Responda todas as 24 perguntas da avaliação HEXACO.",
+            variant: "destructive"
+          });
+          return false;
+        }
+        return true;
+      
+      case 2: // Skills
         if (!formData.skills || formData.skills.length === 0) {
           toast({
             title: "Seleção obrigatória",
@@ -111,26 +123,14 @@ const FormWizard = () => {
         }
         return true;
       
-      case 2: // SubSkills - não obrigatório
+      case 3: // SubSkills - não obrigatório
         return true;
       
-      case 3: // Behavioral Skills
+      case 4: // Behavioral Skills
         if (!formData.behavioralSkills || formData.behavioralSkills.length === 0) {
           toast({
             title: "Seleção obrigatória",
             description: "Selecione pelo menos uma habilidade comportamental.",
-            variant: "destructive"
-          });
-          return false;
-        }
-        return true;
-      
-      case 4: // HEXACO
-        const responses = formData.hexacoResponses || {};
-        if (Object.keys(responses).length < 24) {
-          toast({
-            title: "Avaliação incompleta",
-            description: "Responda todas as 24 perguntas da avaliação HEXACO.",
             variant: "destructive"
           });
           return false;
@@ -216,8 +216,8 @@ const FormWizard = () => {
     
     // Skip HEXACO step if already completed
     let nextStep = currentStep + 1;
-    if (nextStep === 4 && hexacoCompleted) {
-      nextStep = 5; // Skip to Curriculum step
+    if (nextStep === 1 && hexacoCompleted) {
+      nextStep = 2; // Skip to Skills step
       toast({
         title: "Avaliação HEXACO já concluída",
         description: "Você já completou a avaliação HEXACO anteriormente."
@@ -249,8 +249,8 @@ const FormWizard = () => {
   const handlePrev = () => {
     // Skip HEXACO step when going back if already completed
     let prevStep = currentStep - 1;
-    if (prevStep === 4 && hexacoCompleted) {
-      prevStep = 3; // Skip back to Behavioral Skills step
+    if (prevStep === 1 && hexacoCompleted) {
+      prevStep = 0; // Skip back to Personal Info step
     }
     setCurrentStep(Math.max(prevStep, 0));
   };
@@ -317,7 +317,7 @@ const FormWizard = () => {
           </CardHeader>
           
           <CardContent>
-            {currentStep === 4 && hexacoCompleted ? (
+            {currentStep === 1 && hexacoCompleted ? (
               <Alert>
                 <AlertDescription>
                   Você já completou a avaliação HEXACO anteriormente. Esta etapa não pode ser refeita.
